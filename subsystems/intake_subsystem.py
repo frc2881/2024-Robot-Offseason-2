@@ -5,80 +5,62 @@ from commands2 import Subsystem, Command
 from rev import CANSparkLowLevel, CANSparkMax
 from lib import utils, logger
 from lib.classes import MotorDirection
-from classes import IntakeDirection
 import constants
 
 class IntakeSubsystem(Subsystem):
   def __init__(
       self,
-      getIntakeTargetDistance: Callable[[], units.millimeters],
       getLauncherTargetDistance: Callable[[], units.millimeters]
     ) -> None:
     super().__init__()
-    self._getIntakeTargetDistance = getIntakeTargetDistance
     self._getLauncherTargetDistance = getLauncherTargetDistance
 
     self._constants = constants.Subsystems.Intake
 
-    self._bottomBeltsMotor = CANSparkMax(self._constants.kBottomBeltsMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
-    utils.validateParam(self._bottomBeltsMotor.restoreFactoryDefaults())
-    utils.validateParam(self._bottomBeltsMotor.setIdleMode(self._constants.kBottomBeltsMotorIdleMode))
-    utils.validateParam(self._bottomBeltsMotor.setSmartCurrentLimit(self._constants.kBeltsMotorCurrentLimit))
-    utils.validateParam(self._bottomBeltsMotor.setSecondaryCurrentLimit(self._constants.kBeltsMotorCurrentLimit))
-    utils.validateParam(self._bottomBeltsMotor.burnFlash())
+    self._rollersMotor = CANSparkMax(self._constants.kRollerMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    utils.validateParam(self._rollersMotor.restoreFactoryDefaults())
+    utils.validateParam(self._rollersMotor.setIdleMode(self._constants.kRollerMotorIdleMode))
+    utils.validateParam(self._rollersMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._rollersMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._rollersMotor.burnFlash())
 
-    self._topFrontBeltsMotor = CANSparkMax(self._constants.kTopFrontBeltsMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
-    utils.validateParam(self._topFrontBeltsMotor.restoreFactoryDefaults())
-    utils.validateParam(self._topFrontBeltsMotor.setIdleMode(self._constants.kTopBeltsMotorIdleMode))
-    utils.validateParam(self._topFrontBeltsMotor.setSmartCurrentLimit(self._constants.kBeltsMotorCurrentLimit))
-    utils.validateParam(self._topFrontBeltsMotor.setSecondaryCurrentLimit(self._constants.kBeltsMotorCurrentLimit))
-    utils.validateParam(self._topFrontBeltsMotor.burnFlash())
+    self._topMotor = CANSparkMax(self._constants.kTopMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    utils.validateParam(self._topMotor.restoreFactoryDefaults())
+    utils.validateParam(self._topMotor.setIdleMode(self._constants.kTopMotorIdleMode))
+    utils.validateParam(self._topMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._topMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._topMotor.burnFlash())
 
-    self._topRearBeltsMotor = CANSparkMax(self._constants.kTopRearBeltsMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
-    utils.validateParam(self._topRearBeltsMotor.restoreFactoryDefaults())
-    utils.validateParam(self._topRearBeltsMotor.setIdleMode(self._constants.kTopBeltsMotorIdleMode))
-    utils.validateParam(self._topRearBeltsMotor.setSmartCurrentLimit(self._constants.kBeltsMotorCurrentLimit))
-    utils.validateParam(self._topRearBeltsMotor.setSecondaryCurrentLimit(self._constants.kBeltsMotorCurrentLimit))
-    utils.validateParam(self._topRearBeltsMotor.burnFlash())
+    self._bottomMotor = CANSparkMax(self._constants.kBottomMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    utils.validateParam(self._bottomMotor.restoreFactoryDefaults())
+    utils.validateParam(self._bottomMotor.setIdleMode(self._constants.kBottomMotorIdleMode))
+    utils.validateParam(self._bottomMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._bottomMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._bottomMotor.setInverted(True))
+    utils.validateParam(self._bottomMotor.burnFlash())
 
   def periodic(self) -> None:
     self._updateTelemetry()
 
-  def runCommand(self, intakeDirection: IntakeDirection) -> Command:
+  def runCommand(self) -> Command:
     return self.run(
-      lambda: self._runBelts(MotorDirection.Reverse, MotorDirection.Forward, MotorDirection.Forward, self._constants.kBeltsSpeedIntake)
+      lambda: self._run(MotorDirection.Forward, MotorDirection.Forward, MotorDirection.Forward, self._constants.kSpeedIntake)
     ).until(
-      lambda: self._getIntakeTargetDistance() <= self._constants.kIntakeTriggerDistanceRear
-    ).onlyIf(
-      lambda: intakeDirection == IntakeDirection.Rear
-    ).andThen(
-      self.run(
-        lambda: self._runBelts(MotorDirection.Reverse, MotorDirection.Forward, MotorDirection.Forward, self._constants.kBeltsSpeedIntake)
-      ).until(
-        lambda: self._getIntakeTargetDistance() >= self._constants.kIntakeTriggerDistanceFront
-      ).onlyIf(
-        lambda: intakeDirection == IntakeDirection.Rear
-      )
-    ).andThen(
-      self.run(
-        lambda: self._runBelts(MotorDirection.Forward, MotorDirection.Reverse, MotorDirection.Forward, self._constants.kBeltsSpeedIntake)
-      ).until(
-        lambda: self._getLauncherTargetDistance() <= self._constants.kLauncherTriggerDistanceIntake
-      )
+      lambda: self._getLauncherTargetDistance() <= self._constants.kIntakeTriggerDistanceRear
     ).finallyDo(
       lambda end: self.reset()
     ).withName("IntakeSubsystem:Run")
   
-  def ejectCommand(self) -> Command:
+  def ejectCommand(self) -> Command: # TODO: Test which direction eject should go
     return self.run(
-      lambda: self._runBelts(MotorDirection.Reverse, MotorDirection.Forward, MotorDirection.Reverse, self._constants.kBeltsSpeedEject)
+      lambda: self._run(MotorDirection.Reverse, MotorDirection.Reverse, MotorDirection.Reverse, self._constants.kSpeedEject)
     ).finallyDo(
       lambda end: self.reset()
     ).withName("IntakeSubsystem:Eject")
   
   def alignCommand(self) -> Command:
     return self.run(
-      lambda: self._runBelts(MotorDirection.Reverse, MotorDirection.Forward, MotorDirection.Reverse, self._constants.kBeltsSpeedAlign)
+      lambda: self._run(MotorDirection.Stop, MotorDirection.Reverse, MotorDirection.Reverse, self._constants.kSpeedAlign)
     ).until(
       lambda: self._getLauncherTargetDistance() >= self._constants.kLauncherTriggerDistanceAlign
     ).finallyDo(
@@ -87,27 +69,37 @@ class IntakeSubsystem(Subsystem):
 
   def launchCommand(self) -> Command:
     return self.run(
-      lambda: self._runBelts(MotorDirection.Forward, MotorDirection.Reverse, MotorDirection.Forward, self._constants.kBeltsSpeedLaunch)
+      lambda: self._run(MotorDirection.Stop, MotorDirection.Forward, MotorDirection.Forward, self._constants.kSpeedLaunch)
+    ).finallyDo(
+      lambda end: self.reset()
+    ).withName("IntakeSubsystem:Launch")
+  
+  def launchAmpCommand(self) -> Command:
+    return self.run(
+      lambda: self._run(MotorDirection.Stop, MotorDirection.Reverse, MotorDirection.Reverse, self._constants.kSpeedLaunch)
     ).finallyDo(
       lambda end: self.reset()
     ).withName("IntakeSubsystem:Launch")
 
-  def _runBelts(self, bottom: MotorDirection, topFront: MotorDirection, topRear: MotorDirection, speed: units.percent = 0) -> None:
-    self._bottomBeltsMotor.set(self._getBeltsSpeed(speed, bottom))
-    self._topFrontBeltsMotor.set(self._getBeltsSpeed(speed, topFront))
-    self._topRearBeltsMotor.set(self._getBeltsSpeed(speed, topRear))
+  def _run(self, rollers: MotorDirection, top: MotorDirection, bottom: MotorDirection, speed: units.percent = 0) -> None:
+    self._rollersMotor.set(self._getSpeed(speed, rollers))
+    self._topMotor.set(self._getSpeed(speed, top))
+    self._bottomMotor.set(self._getSpeed(speed, bottom))
 
-  def _getBeltsSpeed(self, speed: units.percent, motorDirection: MotorDirection) -> units.percent:
-    return speed * (self._constants.kBeltsMotorMaxReverseOutput if motorDirection == MotorDirection.Reverse else self._constants.kBeltsMotorMaxForwardOutput)
+  def _getSpeed(self, speed: units.percent, motorDirection: MotorDirection) -> units.percent:
+    if(motorDirection == MotorDirection.Stop):
+      return 0
+    else:
+      return speed * (self._constants.kMotorMaxReverseOutput if motorDirection == MotorDirection.Reverse else self._constants.kMotorMaxForwardOutput)
 
   def isLaunchReady(self) -> bool:
     return utils.isValueInRange(self._getLauncherTargetDistance(), self._constants.kLauncherReadyDistanceMin, self._constants.kLauncherReadyDistanceMax)
   
   def reset(self) -> None:
-    self._bottomBeltsMotor.set(0)
-    self._topFrontBeltsMotor.set(0)
-    self._topRearBeltsMotor.set(0)
+    self._rollersMotor.set(0)
+    self._topMotor.set(0)
+    self._bottomMotor.set(0)
     
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putNumber("Robot/Intake/Belts/Speed", self._bottomBeltsMotor.get())
+    SmartDashboard.putNumber("Robot/Intake/Belts/Speed", self._rollersMotor.get())
     SmartDashboard.putNumber("Robot/Intake/IsLaunchReady", self.isLaunchReady())

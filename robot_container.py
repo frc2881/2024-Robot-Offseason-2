@@ -1,26 +1,30 @@
-from wpilib import SmartDashboard, SendableChooser, PowerDistribution, DriverStation
 from commands2 import Command, cmd
 from commands2.button import Trigger
-from extras.pathplannerlib.auto import AutoBuilder, HolonomicPathFollowerConfig, ReplanningConfig
-from lib import utils, logger
+from wpilib import (DriverStation, PowerDistribution, SendableChooser,
+                    SmartDashboard)
+
+import constants
+from classes import LightsMode
+from commands.auto_commands import AutoCommands
+from commands.game_commands import GameCommands
+from extras.pathplannerlib.auto import (AutoBuilder,
+                                        HolonomicPathFollowerConfig,
+                                        ReplanningConfig)
+from lib import logger, utils
 from lib.classes import Alliance, RobotState
 from lib.controllers.game_controller import GameController
 from lib.controllers.lights_controller import LightsController
 from lib.sensors.distance_sensor import DistanceSensor
 # from lib.sensors.gyro_sensor_adis16470 import GyroSensor_ADIS16470
 from lib.sensors.gyro_sensor_navx2 import GyroSensor_NAVX2
-from lib.sensors.pose_sensor import PoseSensor
 from lib.sensors.object_sensor import ObjectSensor
+from lib.sensors.pose_sensor import PoseSensor
 from subsystems.drive_subsystem import DriveSubsystem
-from subsystems.localization_subsystem import LocalizationSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.launcher_arm_subsystem import LauncherArmSubsystem
 from subsystems.launcher_rollers_subsystem import LauncherRollersSubsystem
-from subsystems.climber_subsystem import ClimberSubsystem
-from commands.game_commands import GameCommands
-from commands.auto_commands import AutoCommands
-from classes import IntakeDirection, LightsMode
-import constants
+from subsystems.localization_subsystem import LocalizationSubsystem
+
 
 class RobotContainer:
   def __init__(self) -> None:
@@ -34,7 +38,7 @@ class RobotContainer:
     self._setupAutos()
 
     utils.addRobotPeriodic(lambda: [ 
-      self._updateLights(),
+      # self._updateLights(),
       self._updateTelemetry()
     ])
 
@@ -56,33 +60,33 @@ class RobotContainer:
     # )
     self.gyroSensor = GyroSensor_NAVX2(constants.Sensors.Gyro.NAVX2.kSerialPort)
     self.poseSensors: list[PoseSensor] = []
-    for cameraName, cameraTransform in constants.Sensors.Pose.kPoseSensors.items():
-      self.poseSensors.append(PoseSensor(
-        cameraName,
-        cameraTransform,
-        constants.Sensors.Pose.kPoseStrategy,
-        constants.Sensors.Pose.kFallbackPoseStrategy,
-        constants.Game.Field.kAprilTagFieldLayout
-      ))
-    self.intakeDistanceSensor = DistanceSensor(
+    # for cameraName, cameraTransform in constants.Sensors.Pose.kPoseSensors.items():
+    #   self.poseSensors.append(PoseSensor(
+    #     cameraName,
+    #     cameraTransform,
+    #     constants.Sensors.Pose.kPoseStrategy,
+    #     constants.Sensors.Pose.kFallbackPoseStrategy,
+    #     constants.Game.Field.kAprilTagFieldLayout
+    #   ))
+    self.launcherDistanceSensor = DistanceSensor(
       constants.Sensors.Distance.Intake.kSensorName,
       constants.Sensors.Distance.Intake.kMinTargetDistance,
       constants.Sensors.Distance.Intake.kMaxTargetDistance
     )
-    self.launcherDistanceSensor = DistanceSensor(
-      constants.Sensors.Distance.Launcher.kSensorName,
-      constants.Sensors.Distance.Launcher.kMinTargetDistance,
-      constants.Sensors.Distance.Launcher.kMaxTargetDistance
-    )
-    self.climberDistanceSensor = DistanceSensor(
-      constants.Sensors.Distance.Climber.kSensorName,
-      constants.Sensors.Distance.Climber.kMinTargetDistance,
-      constants.Sensors.Distance.Climber.kMaxTargetDistance
-    )
-    self.objectSensor = ObjectSensor(
-      constants.Sensors.Object.kCameraName,
-      constants.Sensors.Object.kObjectName
-    )
+    # self.launcherDistanceSensor = DistanceSensor(
+    #   constants.Sensors.Distance.Launcher.kSensorName,
+    #   constants.Sensors.Distance.Launcher.kMinTargetDistance,
+    #   constants.Sensors.Distance.Launcher.kMaxTargetDistance
+    # )
+    # self.climberDistanceSensor = DistanceSensor(
+    #   constants.Sensors.Distance.Climber.kSensorName,
+    #   constants.Sensors.Distance.Climber.kMinTargetDistance,
+    #   constants.Sensors.Distance.Climber.kMaxTargetDistance
+    # )
+    # self.objectSensor = ObjectSensor(
+    #   constants.Sensors.Object.kCameraName,
+    #   constants.Sensors.Object.kObjectName
+    # )
 
   def _initSubsystems(self) -> None:
     self.driveSubsystem = DriveSubsystem(
@@ -94,12 +98,10 @@ class RobotContainer:
       lambda: self.driveSubsystem.getSwerveModulePositions()
     )
     self.intakeSubsystem = IntakeSubsystem(
-      lambda: self.intakeDistanceSensor.getDistance(),
       lambda: self.launcherDistanceSensor.getDistance()
     )
     self.launcherArmSubsystem = LauncherArmSubsystem()
     self.launcherRollersSubsystem = LauncherRollersSubsystem()
-    self.climberSubsystem = ClimberSubsystem()
     
   def _initControllers(self) -> None:
     DriverStation.silenceJoystickConnectionWarning(True)
@@ -111,7 +113,7 @@ class RobotContainer:
       constants.Controllers.kOperatorControllerPort, 
       constants.Controllers.kInputDeadband
     )
-    self.lightsController = LightsController()
+    # self.lightsController = LightsController()
 
   def _initCommands(self) -> None:
     self.gameCommands = GameCommands(self)
@@ -133,8 +135,8 @@ class RobotContainer:
           self.driverController.a()).or_(
             self.driverController.b())
       ).negate()
-    ).whileTrue(self.gameCommands.runIntakeCommand(IntakeDirection.Front))
-    self.driverController.leftTrigger().whileTrue(self.gameCommands.runIntakeCommand(IntakeDirection.Rear))
+    ).whileTrue(self.gameCommands.runIntakeCommand())
+    self.driverController.leftTrigger().whileTrue(self.gameCommands.runIntakeCommand())
     self.driverController.rightBumper().whileTrue(self.gameCommands.ejectIntakeCommand())
     self.driverController.leftBumper().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionShuttle, constants.Subsystems.Launcher.Rollers.kSpeedsShuttle))
     self.driverController.leftBumper().and_(self.driverController.rightTrigger()).whileTrue(
@@ -143,9 +145,9 @@ class RobotContainer:
     self.driverController.rightStick().whileTrue(self.gameCommands.alignRobotToTargetCommand())
     self.driverController.rightStick().and_(self.driverController.rightTrigger()).whileTrue(self.gameCommands.launchToTargetCommand())
     self.driverController.leftStick().whileTrue(self.driveSubsystem.lockCommand())
-    self.driverController.povUp().whileTrue(self.climberSubsystem.setArmToDefaultPositionCommand())
+    # self.driverController.povUp().whileTrue(cmd.none())
     # self.driverController.povDown().whileTrue(cmd.none())
-    self.driverController.povLeft().whileTrue(self.climberSubsystem.unlockArmCommand())
+    # self.driverController.povLeft().whileTrue(cmd.none())
     # self.driverController.povRight().whileTrue(cmd.none())
     self.driverController.a().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionAmp, constants.Subsystems.Launcher.Rollers.kSpeedsAmp))
     self.driverController.a().and_(self.driverController.rightTrigger()).whileTrue(
@@ -156,7 +158,7 @@ class RobotContainer:
       self.gameCommands.launchAtPositionCommand(constants.Subsystems.Launcher.Arm.kPositionSubwoofer)
     )
     self.driverController.y().whileTrue(self.gameCommands.reloadIntakeCommand())
-    self.driverController.x().whileTrue(self.gameCommands.runClimberSetupCommand()).onFalse(self.gameCommands.runClimberEngageCommand())
+    # self.driverController.x().whileTrue(cmd.none())
     self.driverController.start().onTrue(self.gyroSensor.calibrateCommand())
     self.driverController.back().onTrue(self.gyroSensor.resetCommand())
 
@@ -180,15 +182,11 @@ class RobotContainer:
     # self.operatorController.b().whileTrue(cmd.none())
     # self.operatorController.y().whileTrue(cmd.none())
     # self.operatorController.x().whileTrue(cmd.none())
-    self.operatorController.start().whileTrue(self.climberSubsystem.resetToZeroCommand())
+    # self.operatorController.start().whileTrue(cmd.none())
     self.operatorController.back().whileTrue(self.launcherArmSubsystem.resetToZeroCommand())
 
   def _setupTriggers(self) -> None:
-    Trigger(
-      lambda: utils.isValueInRange(utils.getMatchTime(), 0.1, 1.0)
-    ).onTrue(
-      self.climberSubsystem.lockArmCommand().withTimeout(1.0)
-    )
+    pass
 
   def _setupAutos(self) -> None:
     AutoBuilder.configureHolonomic(
@@ -283,27 +281,27 @@ class RobotContainer:
     self.intakeSubsystem.reset()
     self.launcherArmSubsystem.reset()
     self.launcherRollersSubsystem.reset()
-    self.climberSubsystem.reset()
 
   def _robotHasInitialZeroResets(self) -> bool:
-    return utils.isCompetitionMode() or (self.launcherArmSubsystem.hasInitialZeroReset() and self.climberSubsystem.hasInitialZeroReset())
+    return True
+    # return utils.isCompetitionMode() or (self.launcherArmSubsystem.hasInitialZeroReset() and self.climberSubsystem.hasInitialZeroReset())
 
-  def _updateLights(self) -> None:
-    lightsMode = LightsMode.Default
-    if utils.getRobotState() == RobotState.Enabled and not self._robotHasInitialZeroResets():
-      lightsMode = LightsMode.RobotNotReady
-    else: 
-      if self.launcherDistanceSensor.hasTarget() or self.intakeDistanceSensor.hasTarget():
-        lightsMode = LightsMode.IntakeNotReady
-        if self.intakeSubsystem.isLaunchReady():
-          lightsMode = LightsMode.IntakeReady
-          if utils.getRobotState() == RobotState.Disabled:
-            if not self.localizationSubsystem.hasVisionTargets():
-              lightsMode = LightsMode.VisionNotReady
-          else:
-            if self.driveSubsystem.isAlignedToTarget() and self.launcherArmSubsystem.isAlignedToTarget():
-              lightsMode = LightsMode.LaunchReady
-    self.lightsController.setLightsMode(lightsMode)
+  # def _updateLights(self) -> None:
+  #   lightsMode = LightsMode.Default
+  #   if utils.getRobotState() == RobotState.Enabled and not self._robotHasInitialZeroResets():
+  #     lightsMode = LightsMode.RobotNotReady
+  #   else: 
+  #     if self.launcherDistanceSensor.hasTarget() or self.intakeDistanceSensor.hasTarget():
+  #       lightsMode = LightsMode.IntakeNotReady
+  #       if self.intakeSubsystem.isLaunchReady():
+  #         lightsMode = LightsMode.IntakeReady
+  #         if utils.getRobotState() == RobotState.Disabled:
+  #           if not self.localizationSubsystem.hasVisionTargets():
+  #             lightsMode = LightsMode.VisionNotReady
+  #         else:
+  #           if self.driveSubsystem.isAlignedToTarget() and self.launcherArmSubsystem.isAlignedToTarget():
+  #             lightsMode = LightsMode.LaunchReady
+  #   self.lightsController.setLightsMode(lightsMode)
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putNumber("Robot/Power/TotalCurrent", self.powerDistribution.getTotalCurrent())

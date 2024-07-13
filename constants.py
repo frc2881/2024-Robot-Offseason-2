@@ -22,12 +22,12 @@ class Controllers:
 
 class Subsystems:
   class Drive:
-    kTrackWidth: units.meters = units.inchesToMeters(24.5)
-    kWheelBase: units.meters = units.inchesToMeters(21.5)
+    kTrackWidth: units.meters = units.inchesToMeters(21.5)
+    kWheelBase: units.meters = units.inchesToMeters(24.5)
     kDriveBaseRadius: units.meters = Translation2d().distance(Translation2d(kWheelBase / 2, kTrackWidth / 2))
 
-    kMaxSpeedMetersPerSecond: units.meters_per_second = 6.32
-    kMaxAngularSpeed: units.radians_per_second = 4 * math.pi
+    kMaxSpeedMetersPerSecond: units.meters_per_second = 4.8
+    kMaxAngularSpeed: units.radians_per_second = 2 * math.pi
 
     kInputLimit: units.percent = 0.6
     kInputRateLimit: units.percent = 0.5
@@ -48,12 +48,12 @@ class Subsystems:
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
     kSwerveModuleFrontLeftTurningMotorCANId: int = 4
-    kSwerveModuleFrontRightDrivingMotorCANId: int = 7
-    kSwerveModuleFrontRightTurningMotorCANId: int = 8
-    kSwerveModuleRearLeftDrivingMotorCANId: int = 5
-    kSwerveModuleRearLeftTurningMotorCANId: int = 6
-    kSwerveModuleRearRightDrivingMotorCANId: int = 9
-    kSwerveModuleRearRightTurningMotorCANId: int = 10
+    kSwerveModuleFrontRightDrivingMotorCANId: int = 7 
+    kSwerveModuleFrontRightTurningMotorCANId: int = 8 
+    kSwerveModuleRearLeftDrivingMotorCANId: int = 5 
+    kSwerveModuleRearLeftTurningMotorCANId: int = 6 
+    kSwerveModuleRearRightDrivingMotorCANId: int = 9 
+    kSwerveModuleRearRightTurningMotorCANId: int = 10 
 
     kSwerveModuleFrontLeftTurningOffset: units.radians = -math.pi / 2
     kSwerveModuleFrontRightTurningOffset: units.radians = 0
@@ -61,7 +61,7 @@ class Subsystems:
     kSwerveModuleRearRightTurningOffset: units.radians = math.pi / 2
 
     kSwerveModuleFrontLeftTranslation = Translation2d(kWheelBase / 2, kTrackWidth / 2)
-    kSwerveModuleFrontRightTranslation =Translation2d(kWheelBase / 2, -kTrackWidth / 2)
+    kSwerveModuleFrontRightTranslation = Translation2d(kWheelBase / 2, -kTrackWidth / 2)
     kSwerveModuleRearLeftTranslation = Translation2d(-kWheelBase / 2, kTrackWidth / 2)
     kSwerveModuleRearRightTranslation = Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
 
@@ -73,7 +73,7 @@ class Subsystems:
     )
 
     class SwerveModule:
-      kFreeSpeed: units.revolutions_per_minute = 6238.73054766
+      kFreeSpeed: units.revolutions_per_minute = 5676
       kWheelDiameter: units.meters = units.inchesToMeters(3.0)
       kWheelCircumference: units.meters = kWheelDiameter * math.pi
       kDrivingMotorPinionTeeth: int = 14
@@ -97,21 +97,22 @@ class Subsystems:
       kTurningMotorPIDConstants = PIDConstants(1, 0, 0, 0)
  
   class Intake:
-    kBottomBeltsMotorCANId: int = 18
-    kTopRearBeltsMotorCANId: int = 19
-    kTopFrontBeltsMotorCANId: int = 20
+    kRollerMotorCANId: int = 11
+    kTopMotorCANId: int = 12
+    kBottomMotorCANId: int = 13
 
-    kBeltsMotorCurrentLimit: units.amperes = 60
-    kBeltsMotorMaxForwardOutput: units.percent = 0.8
-    kBeltsMotorMaxReverseOutput: units.percent = -0.8
+    kMotorCurrentLimit: units.amperes = 60
+    kMotorMaxForwardOutput: units.percent = 0.8
+    kMotorMaxReverseOutput: units.percent = -0.8
 
-    kBottomBeltsMotorIdleMode = CANSparkBase.IdleMode.kBrake
-    kTopBeltsMotorIdleMode = CANSparkBase.IdleMode.kBrake
+    kRollerMotorIdleMode = CANSparkBase.IdleMode.kBrake
+    kTopMotorIdleMode = CANSparkBase.IdleMode.kBrake
+    kBottomMotorIdleMode = CANSparkBase.IdleMode.kBrake
 
-    kBeltsSpeedIntake: units.percent = 0.6
-    kBeltsSpeedAlign: units.percent = 0.15
-    kBeltsSpeedEject: units.percent = 0.6
-    kBeltsSpeedLaunch: units.percent = 0.6
+    kSpeedIntake: units.percent = 0.6
+    kSpeedAlign: units.percent = 0.15
+    kSpeedEject: units.percent = 0.6
+    kSpeedLaunch: units.percent = 0.6
 
     kIntakeTriggerDistanceRear: units.millimeters = 240.0 
     kIntakeTriggerDistanceFront: units.millimeters = 320.0
@@ -124,15 +125,15 @@ class Subsystems:
 
   class Launcher:
     class Arm:
-      kMotorCANId: int = 11
+      kMotorCANId: int = 14
 
       kMotorCurrentLimit: units.amperes = 60
       kMotorMaxReverseOutput: units.percent = -1.0
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorIdleMode = CANSparkBase.IdleMode.kBrake
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
-      kMotorForwardSoftLimit: float = 12.0
-      kMotorReverseSoftLimit: float = 1.0
+      kMotorForwardSoftLimit: float = 12.0 # TODO: update
+      kMotorReverseSoftLimit: float = 1.0 # TODO: update
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
@@ -165,8 +166,8 @@ class Subsystems:
       ]
 
     class Rollers:
-      kBottomMotorCANId: int = 12
-      kTopMotorCANId: int = 13
+      kBottomMotorCANId: int = 15
+      kTopMotorCANId: int = 16
 
       kMotorFreeSpeed: units.revolutions_per_minute = 6238.73054766
 
@@ -180,30 +181,6 @@ class Subsystems:
       kSpeedsShuttle = LauncherRollersSpeeds(0.65, 0.65)
 
       kLaunchSpeedDeltaMin: units.percent = 0.95
-
-  class Climber:
-    class Arm:
-      kLeftMotorCANId: int = 16
-      kRightMotorCANId: int = 17
-
-      kMotorCurrentLimit: units.amperes = 100
-      kMotorMaxReverseOutput: units.percent = -1.0
-      kMotorMaxForwardOutput: units.percent = 1.0
-      kMotorIdleMode = CANSparkBase.IdleMode.kBrake
-      kMotorPIDConstants = PIDConstants(0.05, 0, 0, 0)
-      kMotorForwardSoftLimit: float = 33.0
-      kMotorReverseSoftLimit: float = 0.0
-
-      kInputLimit: units.percent = 0.5
-      kResetSpeed: units.percent = 0.2
-
-      kPositionDefault: float = 8.2
-
-    class Brake:
-      kServoChannel: int = 9
-
-      kPositionUnlocked: float = 1.0
-      kPositionLocked: float = 0
 
 class Sensors:
   class Gyro:
@@ -223,15 +200,15 @@ class Sensors:
       "Rear": Transform3d(
         Translation3d(units.inchesToMeters(-4.75), units.inchesToMeters(-11.25), units.inchesToMeters(20.0)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-24.0), units.degreesToRadians(-177.0))
-      ),
-      "Right": Transform3d(
-        Translation3d(units.inchesToMeters(-3.25), units.inchesToMeters(-11.5), units.inchesToMeters(15.5)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-28.4), units.degreesToRadians(-90.0))
-      ),
-      "Left": Transform3d(
-        Translation3d(units.inchesToMeters(5.75), units.inchesToMeters(3.25), units.inchesToMeters(14.0)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.5), units.degreesToRadians(90))
       )
+      # "Right": Transform3d(
+      #   Translation3d(units.inchesToMeters(-3.25), units.inchesToMeters(-11.5), units.inchesToMeters(15.5)),
+      #   Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-28.4), units.degreesToRadians(-90.0))
+      # ),
+      # "Left": Transform3d(
+      #   Translation3d(units.inchesToMeters(5.75), units.inchesToMeters(3.25), units.inchesToMeters(14.0)),
+      #   Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.5), units.degreesToRadians(90))
+      # )
     }
     kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
     kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY
@@ -244,14 +221,14 @@ class Sensors:
       kSensorName = "Intake"
       kMinTargetDistance: units.millimeters = 0
       kMaxTargetDistance: units.millimeters = 320
-    class Launcher:
-      kSensorName = "Launcher"
-      kMinTargetDistance: units.millimeters = 0
-      kMaxTargetDistance: units.millimeters = 320
-    class Climber:
-      kSensorName = "Climber"
-      kMinTargetDistance: units.millimeters = 0
-      kMaxTargetDistance: units.millimeters = 240
+    # class Launcher:
+    #   kSensorName = "Launcher"
+    #   kMinTargetDistance: units.millimeters = 0
+    #   kMaxTargetDistance: units.millimeters = 320
+    # class Climber:
+    #   kSensorName = "Climber"
+    #   kMinTargetDistance: units.millimeters = 0
+    #   kMaxTargetDistance: units.millimeters = 240
 
   class Object:
     kCameraName = "Front"

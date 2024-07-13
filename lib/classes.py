@@ -21,6 +21,7 @@ class RobotState(Enum):
 class MotorDirection(Enum):
   Forward = auto()
   Reverse = auto()
+  Stop = auto()
 
 class MotorIdleMode(Enum):
   Brake = auto()

@@ -1,12 +1,16 @@
 from typing import TYPE_CHECKING
+
 from commands2 import Command, cmd
 from wpimath import units
+
 from extras.pathplannerlib.auto import AutoBuilder
 from extras.pathplannerlib.path import PathPlannerPath
 from extras.pathplannerlib.pathfinding import PathConstraints
+
 if TYPE_CHECKING: from commands.game_commands import GameCommands
-from classes import AutoPath, IntakeDirection
 import constants
+from classes import AutoPath
+
 
 class AutoCommands:
   def __init__(
@@ -25,7 +29,7 @@ class AutoCommands:
   
   def _pickup(self, path: PathPlannerPath) -> Command:
     return cmd.deadline(
-      self._gameCommands.runIntakeCommand(IntakeDirection.Front),
+      self._gameCommands.runIntakeCommand(),
       self._move(path)
     ).withTimeout(
       constants.Game.Auto.kPickupTimeout

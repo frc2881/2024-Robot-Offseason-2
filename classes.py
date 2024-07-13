@@ -35,10 +35,6 @@ class LightsMode(Enum):
   IntakeNotReady = auto()
   LaunchReady = auto()
 
-class IntakeDirection(Enum):
-  Front = auto()
-  Rear = auto()
-
 @dataclass(frozen=True)
 class LauncherArmPositionTarget:
   distance: units.meters
