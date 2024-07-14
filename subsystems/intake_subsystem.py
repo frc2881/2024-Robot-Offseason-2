@@ -44,16 +44,16 @@ class IntakeSubsystem(Subsystem):
 
   def runCommand(self) -> Command:
     return self.run(
-      lambda: self._run(MotorDirection.Forward, MotorDirection.Forward, MotorDirection.Forward, self._constants.kSpeedIntake)
+      lambda: self._run(MotorDirection.Reverse, MotorDirection.Reverse, MotorDirection.Reverse, self._constants.kSpeedIntake)
     ).until(
-      lambda: self._getLauncherTargetDistance() <= self._constants.kIntakeTriggerDistanceRear
+      lambda: False # self._getLauncherTargetDistance() <= self._constants.kIntakeTriggerDistanceRear
     ).finallyDo(
       lambda end: self.reset()
     ).withName("IntakeSubsystem:Run")
   
   def ejectCommand(self) -> Command: # TODO: Test which direction eject should go
     return self.run(
-      lambda: self._run(MotorDirection.Reverse, MotorDirection.Reverse, MotorDirection.Reverse, self._constants.kSpeedEject)
+      lambda: self._run(MotorDirection.Forward, MotorDirection.Forward, MotorDirection.Forward, self._constants.kSpeedEject)
     ).finallyDo(
       lambda end: self.reset()
     ).withName("IntakeSubsystem:Eject")

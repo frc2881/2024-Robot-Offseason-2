@@ -132,15 +132,15 @@ class Subsystems:
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorIdleMode = CANSparkBase.IdleMode.kBrake
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
-      kMotorForwardSoftLimit: float = 12.0 # TODO: update
-      kMotorReverseSoftLimit: float = 1.0 # TODO: update
+      kMotorForwardSoftLimit: float = 21.0 # TODO: update
+      kMotorReverseSoftLimit: float = 0.0 # TODO: update
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
       kMotorSmartMotionMaxAccel: float = 100.0 / kMotorVelocityConversionFactor
 
       kInputLimit: units.percent = 0.5
-      kResetSpeed: units.percent = 0.2
+      kResetSpeed: units.percent = 0.05
 
       kTargetAlignmentPositionTolerance: float = 0.05
 
@@ -149,7 +149,7 @@ class Subsystems:
       kPositionAmp: float = 9.50
       kPositionShuttle: float = 9.50
       kPositionClimber: float = 1.00
-      kPositionIntake: float = 3.00
+      kPositionIntake: float = 0.00
 
       kPositionTargets: list[LauncherArmPositionTarget] = [
         LauncherArmPositionTarget(0.00, 10.50),

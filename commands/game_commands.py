@@ -58,7 +58,7 @@ class GameCommands:
 
   def alignLauncherToPositionCommand(self, position: float, launcherRollerSpeeds = constants.Subsystems.Launcher.Rollers.kSpeedsDefault) -> Command:
     return cmd.sequence(
-      self.robot.intakeSubsystem.alignCommand(), # TODO: Needed?
+      # self.robot.intakeSubsystem.alignCommand(), # TODO: Needed?
       cmd.parallel(
         self.robot.launcherArmSubsystem.alignToPositionCommand(position),
         self.robot.launcherRollersSubsystem.runCommand(launcherRollerSpeeds)
@@ -80,7 +80,7 @@ class GameCommands:
         self.robot.intakeSubsystem.launchCommand()
       )
     ).onlyIf(
-      lambda: self.robot.launcherDistanceSensor.hasTarget()
+      lambda: True # self.robot.launcherDistanceSensor.hasTarget()
     ).until(
       lambda: not self.robot.launcherDistanceSensor.hasTarget()
     ).finallyDo(lambda end: [
