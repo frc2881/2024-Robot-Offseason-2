@@ -24,7 +24,7 @@ class SwerveModule:
     self._baseKey = f'Robot/Drive/SwerveModules/{self._location.name}'
     self._drivingTargetSpeed: units.meters_per_second = 0
 
-    self._drivingMotor = CANSparkFlex(drivingMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    self._drivingMotor = CANSparkMax(drivingMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
     self._drivingEncoder = self._drivingMotor.getEncoder()
     self._drivingPIDController = self._drivingMotor.getPIDController()
     self._drivingMotor.setCANMaxRetries(10)
