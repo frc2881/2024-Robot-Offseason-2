@@ -1,19 +1,15 @@
 import math
-from wpilib import ADIS16470_IMU, SPI, SerialPort
+from wpilib import SerialPort
 from wpimath.geometry import Transform3d, Translation3d, Rotation3d, Pose3d, Translation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath import units
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
-from rev import CANSparkBase
 from photonlibpy.photonPoseEstimator import PoseStrategy
 from extras.pathplannerlib.controller import PIDConstants as PathPlannerPIDConstants
 from extras.pathplannerlib.pathfinding import PathConstraints
 from extras.pathplannerlib.path import PathPlannerPath
-from lib.classes import PIDConstants, MotorIdleMode
+from lib.classes import PIDConstants
 from classes import AutoPath, LauncherRollersSpeeds, LauncherArmPositionTarget
-
-class Power:
-  kPowerDistributionCANId: int = 1
 
 class Controllers:
   kDriverControllerPort: int = 0
@@ -44,7 +40,7 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    kPathFindingConstraints = PathConstraints(4.8, 3.6, units.degreesToRadians(540), units.degreesToRadians(720))
+    kPathFindingConstraints = PathConstraints(4.2, 2.8, units.degreesToRadians(540), units.degreesToRadians(720))
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
     kSwerveModuleFrontLeftTurningMotorCANId: int = 4
@@ -105,21 +101,15 @@ class Subsystems:
     kMotorMaxForwardOutput: units.percent = 0.8
     kMotorMaxReverseOutput: units.percent = -0.8
 
-    kRollerMotorIdleMode = CANSparkBase.IdleMode.kBrake
-    kTopMotorIdleMode = CANSparkBase.IdleMode.kBrake
-    kBottomMotorIdleMode = CANSparkBase.IdleMode.kBrake
+    kSpeedIntake: units.percent = 0.6 # TODO: update with testing
+    kSpeedAlign: units.percent = 0.15 # TODO: update with testing
+    kSpeedEject: units.percent = 0.6 # TODO: update with testing
+    kSpeedLaunch: units.percent = 0.6 # TODO: update with testing
 
-    kSpeedIntake: units.percent = 0.6
-    kSpeedAlign: units.percent = 0.15
-    kSpeedEject: units.percent = 0.6
-    kSpeedLaunch: units.percent = 0.6
-
-    kIntakeTriggerDistanceRear: units.millimeters = 240.0 
-    kIntakeTriggerDistanceFront: units.millimeters = 320.0
-    kLauncherTriggerDistanceIntake: units.millimeters = 60.0
-    kLauncherTriggerDistanceAlign: units.millimeters = 80.0
-    kLauncherReadyDistanceMin: units.millimeters = 20.0
-    kLauncherReadyDistanceMax: units.millimeters = 120.0
+    kDistanceIntake: units.millimeters = 60.0 # TODO: update with testing
+    kDistanceAlign: units.millimeters = 80.0 # TODO: update with testing
+    kDistanceReadyMin: units.millimeters = 20.0 # TODO: update with testing
+    kDistanceReadyMax: units.millimeters = 120.0 # TODO: update with testing
 
     kReloadTimeout: units.seconds = 0.1
 
@@ -130,27 +120,27 @@ class Subsystems:
       kMotorCurrentLimit: units.amperes = 60
       kMotorMaxReverseOutput: units.percent = -1.0
       kMotorMaxForwardOutput: units.percent = 1.0
-      kMotorIdleMode = CANSparkBase.IdleMode.kBrake
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
-      kMotorForwardSoftLimit: float = 21.0 # TODO: update
-      kMotorReverseSoftLimit: float = 0.0 # TODO: update
+      kMotorForwardSoftLimit: float = 21.0 # TODO: update with testing
+      kMotorReverseSoftLimit: float = 0.0 # TODO: update with testing
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
-      kMotorSmartMotionMaxAccel: float = 100.0 / kMotorVelocityConversionFactor
+      kMotorSmartMotionMaxAccel: float = 100.0 / kMotorVelocityConversionFactor # TODO: update with testing
 
       kInputLimit: units.percent = 0.5
       kResetSpeed: units.percent = 0.05
 
       kTargetAlignmentPositionTolerance: float = 0.05
 
-      kPositionSubwoofer: float = 10.0
-      kPositionPodium: float = 4.3
-      kPositionAmp: float = 9.50
-      kPositionShuttle: float = 9.50
-      kPositionClimber: float = 1.00
-      kPositionIntake: float = 0.00
+      kPositionSubwoofer: float = 10.0 # TODO: update with testing
+      kPositionPodium: float = 4.3 # TODO: update with testing
+      kPositionAmp: float = 9.50 # TODO: update with testing
+      kPositionShuttle: float = 9.50 # TODO: update with testing
+      kPositionClimber: float = 1.00 # TODO: update with testing
+      kPositionIntake: float = 0.00 # TODO: update with testing
 
+      # TODO: update with testing
       kPositionTargets: list[LauncherArmPositionTarget] = [
         LauncherArmPositionTarget(0.00, 10.50),
         LauncherArmPositionTarget(1.00, 10.20),
@@ -169,16 +159,15 @@ class Subsystems:
       kBottomMotorCANId: int = 15
       kTopMotorCANId: int = 16
 
-      kMotorFreeSpeed: units.revolutions_per_minute = 6238.73054766
+      kMotorFreeSpeed: units.revolutions_per_minute = 6784
 
       kMotorCurrentLimit: units.amperes = 100
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorMaxReverseOutput: units.percent = -1.0
-      kMotorIdleMode = CANSparkBase.IdleMode.kBrake
 
-      kSpeedsDefault = LauncherRollersSpeeds(0.80, 0.80)
-      kSpeedsAmp = LauncherRollersSpeeds(0.30, 0.35)
-      kSpeedsShuttle = LauncherRollersSpeeds(0.65, 0.65)
+      kSpeedsDefault = LauncherRollersSpeeds(0.80, 0.80) # TODO: update with testing
+      kSpeedsAmp = LauncherRollersSpeeds(0.30, 0.35) # TODO: update with testing
+      kSpeedsShuttle = LauncherRollersSpeeds(0.65, 0.65) # TODO: update with testing
 
       kLaunchSpeedDeltaMin: units.percent = 0.95
 
@@ -186,29 +175,17 @@ class Sensors:
   class Gyro:
     class NAVX2:
       kSerialPort = SerialPort.Port.kUSB
-    class ADIS16470:
-      kSPIPort = SPI.Port.kOnboardCS0
-      kIMUAxisYaw = ADIS16470_IMU.IMUAxis.kZ
-      kIMUAxisPitch = ADIS16470_IMU.IMUAxis.kX
-      kIMUAxisRoll = ADIS16470_IMU.IMUAxis.kY
-      kInitCalibrationTime = ADIS16470_IMU.CalibrationTime._8s
-      kCommandCalibrationTime = ADIS16470_IMU.CalibrationTime._4s
-      kCommandCalibrationDelay: units.seconds = 4.0
 
   class Pose:
     kPoseSensors: dict[str, Transform3d] = {
       "Rear": Transform3d(
-        Translation3d(units.inchesToMeters(-4.75), units.inchesToMeters(-11.25), units.inchesToMeters(20.0)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-24.0), units.degreesToRadians(-177.0))
+        Translation3d(units.inchesToMeters(-4.75), units.inchesToMeters(-11.25), units.inchesToMeters(20.0)), # TODO: update with testing
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-24.0), units.degreesToRadians(-177.0)) # TODO: update with testing
+      ),
+      "Front": Transform3d(
+        Translation3d(units.inchesToMeters(-3.25), units.inchesToMeters(-11.5), units.inchesToMeters(15.5)), # TODO: update with testing
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-28.4), units.degreesToRadians(-90.0)) # TODO: update with testing
       )
-      # "Right": Transform3d(
-      #   Translation3d(units.inchesToMeters(-3.25), units.inchesToMeters(-11.5), units.inchesToMeters(15.5)),
-      #   Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-28.4), units.degreesToRadians(-90.0))
-      # ),
-      # "Left": Transform3d(
-      #   Translation3d(units.inchesToMeters(5.75), units.inchesToMeters(3.25), units.inchesToMeters(14.0)),
-      #   Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.5), units.degreesToRadians(90))
-      # )
     }
     kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
     kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY
@@ -217,33 +194,23 @@ class Sensors:
     kVisionMaxPoseAmbiguity: units.percent = 0.2
 
   class Distance:
-    class Intake:
-      kSensorName = "Intake"
-      kMinTargetDistance: units.millimeters = 0
-      kMaxTargetDistance: units.millimeters = 320
-    # class Launcher:
-    #   kSensorName = "Launcher"
-    #   kMinTargetDistance: units.millimeters = 0
-    #   kMaxTargetDistance: units.millimeters = 320
-    # class Climber:
-    #   kSensorName = "Climber"
-    #   kMinTargetDistance: units.millimeters = 0
-    #   kMaxTargetDistance: units.millimeters = 240
-
-  class Object:
-    kCameraName = "Front"
-    kObjectName = "Note"
+    class Launcher:
+      kSensorName = "Launcher"
+      kMinTargetDistance: units.millimeters = 1
+      kMaxTargetDistance: units.millimeters = 320 # TODO: update with testing
 
 _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
 
 class Game:
   class Commands:
-    kScoringAlignmentTimeout: units.seconds = 0.5
-    kScoringLaunchTimeout: units.seconds = 1.0
+    kScoringAlignmentTimeout: units.seconds = 0.5 # TODO: update with testing
+    kScoringLaunchTimeout: units.seconds = 1.0 # TODO: update with testing
 
   class Field:
     kAprilTagFieldLayout = _aprilTagFieldLayout
-    kBounds = (Translation2d(0, 0), Translation2d(kAprilTagFieldLayout.getFieldLength(), kAprilTagFieldLayout.getFieldWidth()))
+    kLength = kAprilTagFieldLayout.getFieldLength()
+    kWidth = kAprilTagFieldLayout.getFieldWidth()
+    kBounds = (Translation2d(0, 0), Translation2d(kLength, kWidth))
 
     class Targets:  
       kBlueSpeaker = _aprilTagFieldLayout.getTagPose(7) or Pose3d()
@@ -284,4 +251,4 @@ class Game:
       AutoPath.ScoreStage3: PathPlannerPath.fromPathFile(AutoPath.ScoreStage3.name)
     }
 
-    kPickupTimeout: units.seconds = 4.0
+    kPickupTimeout: units.seconds = 4.0 # TODO: update with testing

@@ -4,7 +4,6 @@ from commands2 import Command, cmd
 if TYPE_CHECKING: from robot_container import RobotContainer
 from lib import utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
-from classes import LauncherRollersSpeeds
 import constants
 
 class GameCommands:
@@ -49,7 +48,7 @@ class GameCommands:
 
   def alignLauncherToTargetCommand(self) -> Command:
     return cmd.sequence(
-      self.robot.intakeSubsystem.alignCommand(), # TODO: Needed?
+      self.robot.intakeSubsystem.alignCommand(),
       cmd.parallel(
         self.robot.launcherArmSubsystem.alignToTargetCommand(lambda: self.robot.localizationSubsystem.getTargetDistance()),
         self.robot.launcherRollersSubsystem.runCommand(constants.Subsystems.Launcher.Rollers.kSpeedsDefault)
@@ -58,7 +57,7 @@ class GameCommands:
 
   def alignLauncherToPositionCommand(self, position: float, launcherRollerSpeeds = constants.Subsystems.Launcher.Rollers.kSpeedsDefault) -> Command:
     return cmd.sequence(
-      # self.robot.intakeSubsystem.alignCommand(), # TODO: Needed?
+      self.robot.intakeSubsystem.alignCommand(),
       cmd.parallel(
         self.robot.launcherArmSubsystem.alignToPositionCommand(position),
         self.robot.launcherRollersSubsystem.runCommand(launcherRollerSpeeds)
@@ -80,7 +79,7 @@ class GameCommands:
         self.robot.intakeSubsystem.launchCommand()
       )
     ).onlyIf(
-      lambda: True # self.robot.launcherDistanceSensor.hasTarget()
+      lambda: self.robot.launcherDistanceSensor.hasTarget()
     ).until(
       lambda: not self.robot.launcherDistanceSensor.hasTarget()
     ).finallyDo(lambda end: [
