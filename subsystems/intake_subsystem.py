@@ -1,7 +1,7 @@
 from typing import Callable
 from wpilib import SmartDashboard
 from wpimath import units
-from commands2 import Subsystem, Command
+from commands2 import Subsystem, Command, cmd
 from rev import CANSparkBase, CANSparkLowLevel, CANSparkMax
 from lib import utils, logger
 from lib.classes import MotorDirection
@@ -58,6 +58,13 @@ class IntakeSubsystem(Subsystem):
       lambda end: self.reset()
     ).withName("IntakeSubsystem:Run")
   
+  def reloadCommand(self) -> Command:
+    return self.ejectCommand().withTimeout(
+      constants.Subsystems.Intake.kReloadTimeout
+    ).andThen(
+      self.runCommand()
+    ).withName("IntakeSubsystem:Reload")
+
   def ejectCommand(self) -> Command:
     return self.run(
       lambda: self._run(
@@ -71,15 +78,15 @@ class IntakeSubsystem(Subsystem):
     ).withName("IntakeSubsystem:Eject")
   
   def alignCommand(self) -> Command:
-    return self.run(
+    return cmd.run(
       lambda: self._run(
-        MotorDirection.Stopped, 
-        MotorDirection.Reverse, 
-        MotorDirection.Reverse, 
+        MotorDirection.Forward, 
+        MotorDirection.Forward, 
+        MotorDirection.Forward, 
         self._constants.kSpeedAlign
       )
-    ).until(
-      lambda: self._getLauncherHasTarget() and self._getLauncherDistance() >= self._constants.kDistanceAlign
+    ).withTimeout(
+      self._constants.kAlignTimeout
     ).finallyDo(
       lambda end: self.reset()
     ).withName("IntakeSubsystem:Align")
@@ -88,8 +95,8 @@ class IntakeSubsystem(Subsystem):
     return self.run(
       lambda: self._run(
         MotorDirection.Stopped, 
-        MotorDirection.Forward, 
-        MotorDirection.Forward, 
+        MotorDirection.Reverse, 
+        MotorDirection.Reverse, 
         self._constants.kSpeedLaunch
       )
     ).finallyDo(
@@ -100,8 +107,8 @@ class IntakeSubsystem(Subsystem):
     return self.run(
       lambda: self._run(
         MotorDirection.Stopped, 
-        MotorDirection.Reverse, 
-        MotorDirection.Reverse, 
+        MotorDirection.Forward, 
+        MotorDirection.Forward, 
         self._constants.kSpeedLaunch
       )
     ).finallyDo(
@@ -119,8 +126,11 @@ class IntakeSubsystem(Subsystem):
     else:
       return 0
 
+  def isLoaded(self) -> bool:
+    return self._getLauncherHasTarget() and self._getLauncherDistance() <= self._constants.kDistanceLauncherReadyMax
+
   def isLaunchReady(self) -> bool:
-    return self._getLauncherHasTarget() and utils.isValueInRange(self._getLauncherDistance(), self._constants.kDistanceReadyMin, self._constants.kDistanceReadyMax)
+    return self._getLauncherHasTarget() and utils.isValueInRange(self._getLauncherDistance(), self._constants.kDistanceLauncherReadyMin, self._constants.kDistanceLauncherReadyMax)
   
   def reset(self) -> None:
     self._rollersMotor.set(0)
@@ -129,4 +139,5 @@ class IntakeSubsystem(Subsystem):
     
   def _updateTelemetry(self) -> None:
     SmartDashboard.putNumber("Robot/Intake/Speed", self._topMotor.get())
+    SmartDashboard.putBoolean("Robot/Intake/IsLoaded", self.isLoaded())
     SmartDashboard.putBoolean("Robot/Intake/IsLaunchReady", self.isLaunchReady())

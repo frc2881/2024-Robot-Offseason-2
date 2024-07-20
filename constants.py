@@ -102,15 +102,15 @@ class Subsystems:
     kMotorMaxReverseOutput: units.percent = -0.8
 
     kSpeedIntake: units.percent = 0.6 # TODO: update with testing
-    kSpeedAlign: units.percent = 0.15 # TODO: update with testing
+    kSpeedAlign: units.percent = 0.3 # TODO: update with testing
     kSpeedEject: units.percent = 0.6 # TODO: update with testing
-    kSpeedLaunch: units.percent = 0.6 # TODO: update with testing
+    kSpeedLaunch: units.percent = 0.8 # TODO: update with testing
 
     kDistanceIntake: units.millimeters = 60.0 # TODO: update with testing
-    kDistanceAlign: units.millimeters = 80.0 # TODO: update with testing
-    kDistanceReadyMin: units.millimeters = 20.0 # TODO: update with testing
-    kDistanceReadyMax: units.millimeters = 120.0 # TODO: update with testing
+    kDistanceLauncherReadyMin: units.millimeters = 40.0 # TODO: update with testing
+    kDistanceLauncherReadyMax: units.millimeters = 150.0 # TODO: update with testing
 
+    kAlignTimeout: units.seconds = 0.08
     kReloadTimeout: units.seconds = 0.1
 
   class Launcher:
@@ -129,7 +129,7 @@ class Subsystems:
       kMotorSmartMotionMaxAccel: float = 100.0 / kMotorVelocityConversionFactor # TODO: update with testing
 
       kInputLimit: units.percent = 0.5
-      kResetSpeed: units.percent = 0.05
+      kResetSpeed: units.percent = 0.1
 
       kTargetAlignmentPositionTolerance: float = 0.05
 
@@ -165,9 +165,9 @@ class Subsystems:
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorMaxReverseOutput: units.percent = -1.0
 
-      kSpeedsDefault = LauncherRollersSpeeds(0.80, 0.80) # TODO: update with testing
-      kSpeedsAmp = LauncherRollersSpeeds(0.30, 0.35) # TODO: update with testing
-      kSpeedsShuttle = LauncherRollersSpeeds(0.65, 0.65) # TODO: update with testing
+      kSpeedsDefault = LauncherRollersSpeeds(0.90, 0.90) # TODO: update with testing
+      kSpeedsAmp = LauncherRollersSpeeds(0.3, 0.3) # TODO: update with testing
+      kSpeedsShuttle = LauncherRollersSpeeds(0.75, 0.75) # TODO: update with testing
 
       kLaunchSpeedDeltaMin: units.percent = 0.95
 
@@ -179,12 +179,12 @@ class Sensors:
   class Pose:
     kPoseSensors: dict[str, Transform3d] = {
       "Rear": Transform3d(
-        Translation3d(units.inchesToMeters(-4.75), units.inchesToMeters(-11.25), units.inchesToMeters(20.0)), # TODO: update with testing
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-24.0), units.degreesToRadians(-177.0)) # TODO: update with testing
+        Translation3d(units.inchesToMeters(5.5), units.inchesToMeters(0.0), units.inchesToMeters(21.0)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.3), units.degreesToRadians(-180.0))
       ),
       "Front": Transform3d(
-        Translation3d(units.inchesToMeters(-3.25), units.inchesToMeters(-11.5), units.inchesToMeters(15.5)), # TODO: update with testing
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-28.4), units.degreesToRadians(-90.0)) # TODO: update with testing
+        Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
       )
     }
     kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
@@ -204,7 +204,7 @@ _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Cresce
 class Game:
   class Commands:
     kScoringAlignmentTimeout: units.seconds = 0.5 # TODO: update with testing
-    kScoringLaunchTimeout: units.seconds = 1.0 # TODO: update with testing
+    kScoringLaunchTimeout: units.seconds = 1.25 # TODO: update with testing
 
   class Field:
     kAprilTagFieldLayout = _aprilTagFieldLayout
