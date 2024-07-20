@@ -129,21 +129,22 @@ class RobotContainer:
     self.operatorController.rightTrigger().and_(
       self.operatorController.leftTrigger().or_(
         self.operatorController.povUp()).or_(
-          self.operatorController.povDown())).whileTrue(self.gameCommands.runLauncherCommand())
+          self.operatorController.povDown()).or_(
+            self.operatorController.povLeft())).whileTrue(self.gameCommands.runLauncherCommand())
     self.operatorController.leftTrigger().whileTrue(self.gameCommands.alignLauncherToTargetCommand())
     self.operatorController.rightBumper().and_(self.operatorController.leftBumper()).whileTrue(self.gameCommands.runLauncherCommand())
     self.operatorController.leftBumper().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionAmp, constants.Subsystems.Launcher.Rollers.kSpeedsAmp))
-    # # self.operatorController.rightStick().whileTrue(cmd.none())
-    # # self.operatorController.leftStick().whileTrue(cmd.none())
+    # self.operatorController.rightStick().whileTrue(cmd.none())
+    # self.operatorController.leftStick().whileTrue(cmd.none())
     self.operatorController.povUp().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionPodium))
     self.operatorController.povDown().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionSubwoofer))
-    # # self.operatorController.povLeft().whileTrue(cmd.none())
-    # # self.operatorController.povRight().whileTrue(cmd.none())
-    # # self.operatorController.a().whileTrue(cmd.none())
-    # # self.operatorController.b().whileTrue(cmd.none())
-    # # self.operatorController.y().whileTrue(cmd.none())
-    # # self.operatorController.x().whileTrue(cmd.none())
-    # # self.operatorController.start().whileTrue(cmd.none())
+    self.operatorController.povLeft().whileTrue(self.launcherRollersSubsystem.runCommand(constants.Subsystems.Launcher.Rollers.kSpeedsDefault))
+    # self.operatorController.povRight().whileTrue(cmd.none())
+    # self.operatorController.a().whileTrue(cmd.none())
+    # self.operatorController.b().whileTrue(cmd.none())
+    # self.operatorController.y().whileTrue(cmd.none())
+    # self.operatorController.x().whileTrue(cmd.none())
+    # self.operatorController.start().whileTrue(cmd.none())
     self.operatorController.back().whileTrue(self.launcherArmSubsystem.resetToZeroCommand())
 
   def _setupTriggers(self) -> None:
