@@ -95,15 +95,14 @@ class RobotContainer:
       )
     )
     self.driverController.rightTrigger().and_(
-      (self.driverController.rightStick().or_(
+      (self.driverController.leftTrigger().or_(
         self.driverController.leftBumper()).or_(
           self.driverController.a()).or_(
             self.driverController.b())).negate()).whileTrue(self.gameCommands.runIntakeCommand())
-    self.driverController.rightTrigger().and_(self.driverController.rightStick()).whileTrue(self.gameCommands.launchToTargetCommand())
-    self.driverController.rightTrigger().and_(
-      self.driverController.leftBumper().or_(
-        self.driverController.a()).or_(
-          self.driverController.b())).whileTrue(self.gameCommands.runLauncherCommand())
+    self.driverController.rightTrigger().and_(self.driverController.leftTrigger()).whileTrue(self.gameCommands.launchToTargetCommand())
+    self.driverController.rightTrigger().and_(self.driverController.leftBumper()).whileTrue(self.gameCommands.runLauncherCommand())
+    self.driverController.rightTrigger().and_(self.driverController.a()).whileTrue(self.gameCommands.launchAtAmpCommand())
+    self.driverController.rightTrigger().and_(self.driverController.b()).whileTrue(self.gameCommands.runLauncherCommand())
     # self.driverController.leftTrigger().whileTrue(cmd.none())
     self.driverController.rightBumper().whileTrue(self.gameCommands.ejectIntakeCommand())
     self.driverController.leftBumper().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionShuttle, constants.Subsystems.Launcher.Rollers.kSpeedsShuttle))
@@ -113,7 +112,7 @@ class RobotContainer:
     # self.driverController.povDown().whileTrue(cmd.none())
     # self.driverController.povLeft().whileTrue(cmd.none())
     # self.driverController.povRight().whileTrue(cmd.none())
-    self.driverController.a().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionAmp, constants.Subsystems.Launcher.Rollers.kSpeedsAmp))
+    self.driverController.a().whileTrue(self.gameCommands.alignLauncherToAmpCommand())
     self.driverController.b().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionSubwoofer))
     self.driverController.y().whileTrue(self.gameCommands.reloadIntakeCommand())
     # self.driverController.x().whileTrue(cmd.none())
@@ -132,13 +131,13 @@ class RobotContainer:
           self.operatorController.povDown()).or_(
             self.operatorController.povLeft())).whileTrue(self.gameCommands.runLauncherCommand())
     self.operatorController.leftTrigger().whileTrue(self.gameCommands.alignLauncherToTargetCommand())
-    self.operatorController.rightBumper().and_(self.operatorController.leftBumper()).whileTrue(self.gameCommands.runLauncherCommand())
-    self.operatorController.leftBumper().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionAmp, constants.Subsystems.Launcher.Rollers.kSpeedsAmp))
+    self.operatorController.rightBumper().and_(self.operatorController.leftBumper()).whileTrue(self.gameCommands.launchAtAmpCommand())
+    self.operatorController.leftBumper().whileTrue(self.gameCommands.alignLauncherToAmpCommand())
     # self.operatorController.rightStick().whileTrue(cmd.none())
     # self.operatorController.leftStick().whileTrue(cmd.none())
     self.operatorController.povUp().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionPodium))
     self.operatorController.povDown().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionSubwoofer))
-    self.operatorController.povLeft().whileTrue(self.launcherRollersSubsystem.runCommand(constants.Subsystems.Launcher.Rollers.kSpeedsDefault))
+    self.operatorController.povLeft().whileTrue(self.gameCommands.alignLauncherCommand())
     # self.operatorController.povRight().whileTrue(cmd.none())
     # self.operatorController.a().whileTrue(cmd.none())
     # self.operatorController.b().whileTrue(cmd.none())

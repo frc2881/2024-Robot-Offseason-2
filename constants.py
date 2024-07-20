@@ -101,17 +101,18 @@ class Subsystems:
     kMotorMaxForwardOutput: units.percent = 0.8
     kMotorMaxReverseOutput: units.percent = -0.8
 
-    kSpeedIntake: units.percent = 0.6 # TODO: update with testing
-    kSpeedAlign: units.percent = 0.3 # TODO: update with testing
-    kSpeedEject: units.percent = 0.6 # TODO: update with testing
-    kSpeedLaunch: units.percent = 0.8 # TODO: update with testing
+    kSpeedIntake: units.percent = 0.8
+    kSpeedAlign: units.percent = 0.3
+    kSpeedEject: units.percent = 0.6
+    kSpeedLaunch: units.percent = 1.0
+    kSpeedLaunchAmp: units.percent = .45
 
-    kDistanceIntake: units.millimeters = 60.0 # TODO: update with testing
-    kDistanceLauncherReadyMin: units.millimeters = 40.0 # TODO: update with testing
-    kDistanceLauncherReadyMax: units.millimeters = 150.0 # TODO: update with testing
+    kDistanceIntake: units.millimeters = 20.0
+    kDistanceLauncherReadyMin: units.millimeters = 10.0
+    kDistanceLauncherReadyMax: units.millimeters = 150.0
 
     kAlignTimeout: units.seconds = 0.08
-    kReloadTimeout: units.seconds = 0.1
+    kReloadTimeout: units.seconds = 0.06
 
   class Launcher:
     class Arm:
@@ -121,38 +122,36 @@ class Subsystems:
       kMotorMaxReverseOutput: units.percent = -1.0
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
-      kMotorForwardSoftLimit: float = 21.0 # TODO: update with testing
-      kMotorReverseSoftLimit: float = 0.0 # TODO: update with testing
+      kMotorForwardSoftLimit: float = 23.0
+      kMotorReverseSoftLimit: float = 0.0
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
-      kMotorSmartMotionMaxAccel: float = 100.0 / kMotorVelocityConversionFactor # TODO: update with testing
+      kMotorSmartMotionMaxAccel: float = 100.0 / kMotorVelocityConversionFactor 
 
       kInputLimit: units.percent = 0.5
       kResetSpeed: units.percent = 0.1
 
       kTargetAlignmentPositionTolerance: float = 0.05
 
-      kPositionSubwoofer: float = 10.0 # TODO: update with testing
-      kPositionPodium: float = 4.3 # TODO: update with testing
-      kPositionAmp: float = 9.50 # TODO: update with testing
-      kPositionShuttle: float = 9.50 # TODO: update with testing
-      kPositionClimber: float = 1.00 # TODO: update with testing
-      kPositionIntake: float = 0.00 # TODO: update with testing
+      kPositionSubwoofer: float = 7.75
+      kPositionPodium: float = 4.0
+      kPositionAmp: float = 23.0
+      kPositionShuttle: float = 6.0
+      kPositionIntake: float = 0.00
 
-      # TODO: update with testing
       kPositionTargets: list[LauncherArmPositionTarget] = [
-        LauncherArmPositionTarget(0.00, 10.50),
-        LauncherArmPositionTarget(1.00, 10.20),
+        LauncherArmPositionTarget(0.00, 8.25),
+        LauncherArmPositionTarget(1.00, 8.0),
         LauncherArmPositionTarget(1.25, kPositionSubwoofer),
-        LauncherArmPositionTarget(2.50, 5.60),
+        LauncherArmPositionTarget(2.50, 4.5),
         LauncherArmPositionTarget(2.90, kPositionPodium),
-        LauncherArmPositionTarget(3.45, 3.40),
-        LauncherArmPositionTarget(4.00, 2.80),
-        LauncherArmPositionTarget(4.75, 1.90),
-        LauncherArmPositionTarget(5.15, 1.60),
-        LauncherArmPositionTarget(6.05, 1.40),
-        LauncherArmPositionTarget(7.00, 1.00)
+        LauncherArmPositionTarget(3.45, 3.50),
+        LauncherArmPositionTarget(4.00, 2.90),
+        LauncherArmPositionTarget(4.75, 2.10),
+        LauncherArmPositionTarget(5.15, 1.80),
+        LauncherArmPositionTarget(6.05, 1.60),
+        LauncherArmPositionTarget(7.00, 1.40)
       ]
 
     class Rollers:
@@ -165,9 +164,9 @@ class Subsystems:
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorMaxReverseOutput: units.percent = -1.0
 
-      kSpeedsDefault = LauncherRollersSpeeds(0.90, 0.90) # TODO: update with testing
-      kSpeedsAmp = LauncherRollersSpeeds(0.3, 0.3) # TODO: update with testing
-      kSpeedsShuttle = LauncherRollersSpeeds(0.75, 0.75) # TODO: update with testing
+      kSpeedsDefault = LauncherRollersSpeeds(1.0, 1.0)
+      kSpeedsAmp = LauncherRollersSpeeds(0.3, 0.3)
+      kSpeedsShuttle = LauncherRollersSpeeds(0.9, 0.9)
 
       kLaunchSpeedDeltaMin: units.percent = 0.95
 
@@ -197,14 +196,14 @@ class Sensors:
     class Launcher:
       kSensorName = "Launcher"
       kMinTargetDistance: units.millimeters = 1
-      kMaxTargetDistance: units.millimeters = 320 # TODO: update with testing
+      kMaxTargetDistance: units.millimeters = 320
 
 _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
 
 class Game:
   class Commands:
-    kScoringAlignmentTimeout: units.seconds = 0.5 # TODO: update with testing
-    kScoringLaunchTimeout: units.seconds = 1.25 # TODO: update with testing
+    kScoringAlignmentTimeout: units.seconds = 0.5
+    kScoringLaunchTimeout: units.seconds = 1.25
 
   class Field:
     kAprilTagFieldLayout = _aprilTagFieldLayout
@@ -251,4 +250,4 @@ class Game:
       AutoPath.ScoreStage3: PathPlannerPath.fromPathFile(AutoPath.ScoreStage3.name)
     }
 
-    kPickupTimeout: units.seconds = 4.0 # TODO: update with testing
+    kPickupTimeout: units.seconds = 4.0

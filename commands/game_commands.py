@@ -62,6 +62,20 @@ class GameCommands:
         self.robot.launcherRollersSubsystem.runCommand(launcherRollerSpeeds)
       )
     ).withName("GameCommands:AlignLauncherToPosition")
+
+  def alignLauncherToAmpCommand(self) -> Command:
+    return cmd.sequence(
+      self.robot.intakeSubsystem.alignCommand(),
+      self.robot.launcherArmSubsystem.alignToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionAmp)
+    ).withName("GameCommands:AlignLauncherToAmp")
+  
+  def alignLauncherCommand(self, launcherRollerSpeeds = constants.Subsystems.Launcher.Rollers.kSpeedsDefault) -> Command:
+    return cmd.sequence(
+      self.robot.intakeSubsystem.alignCommand(),
+      cmd.parallel(
+        self.robot.launcherRollersSubsystem.runCommand(launcherRollerSpeeds)
+      )
+    ).withName("GameCommands:AlignLauncher")
   
   def runLauncherCommand(self) -> Command:
     return cmd.sequence(
@@ -93,6 +107,11 @@ class GameCommands:
       ),
       self.alignLauncherToPositionCommand(position, launcherRollerSpeeds)
     ).withName("GameCommands:LaunchAtPosition")
+  
+  def launchAtAmpCommand(self) -> Command:
+    return cmd.sequence(
+      self.robot.intakeSubsystem.launchAtAmpCommand()
+    ).withName("GameCommands:LaunchAtAmp")
   
   def rumbleControllersCommand(self, mode: ControllerRumbleMode, pattern: ControllerRumblePattern) -> Command:
     return cmd.parallel(

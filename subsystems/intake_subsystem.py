@@ -80,7 +80,7 @@ class IntakeSubsystem(Subsystem):
   def alignCommand(self) -> Command:
     return cmd.run(
       lambda: self._run(
-        MotorDirection.Forward, 
+        MotorDirection.Stopped, 
         MotorDirection.Forward, 
         MotorDirection.Forward, 
         self._constants.kSpeedAlign
@@ -103,13 +103,13 @@ class IntakeSubsystem(Subsystem):
       lambda end: self.reset()
     ).withName("IntakeSubsystem:Launch")
   
-  def launchAmpCommand(self) -> Command:
+  def launchAtAmpCommand(self) -> Command:
     return self.run(
       lambda: self._run(
         MotorDirection.Stopped, 
         MotorDirection.Forward, 
         MotorDirection.Forward, 
-        self._constants.kSpeedLaunch
+        self._constants.kSpeedLaunchAmp
       )
     ).finallyDo(
       lambda end: self.reset()

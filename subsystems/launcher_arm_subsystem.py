@@ -62,7 +62,7 @@ class LauncherArmSubsystem(Subsystem):
     ).beforeStarting(
       lambda: self.clearTargetAlignment()
     ).finallyDo(
-      lambda end: self.reset()
+      lambda end: self._alignToIntake()
     ).withName("LauncherArmSubsystem:AlignToPosition")
   
   def alignToTargetCommand(self, getTargetDistance: Callable[[], units.meters]) -> Command:
@@ -75,8 +75,12 @@ class LauncherArmSubsystem(Subsystem):
     ).beforeStarting(
       lambda: self.clearTargetAlignment()
     ).finallyDo(
-      lambda end: self.reset()
+      lambda end: self._alignToIntake()
     ).withName("LauncherArmSubsystem:AlignToTarget")
+
+  def _alignToIntake(self) -> Command:
+    self._armPIDController.setReference(self._constants.kPositionIntake, CANSparkBase.ControlType.kSmartMotion)
+    self.clearTargetAlignment()
 
   def _getTargetPosition(self, targetDistance: units.meters) -> float:
     targetPosition = utils.getInterpolatedValue(targetDistance, self._targetDistances, self._targetPositions)
@@ -110,6 +114,9 @@ class LauncherArmSubsystem(Subsystem):
 
   def hasInitialZeroReset(self) -> bool:
     return self._hasInitialZeroReset
+  
+  def isPositionAmp(self) -> bool:
+    return self._armEncoder.getPosition() > 20
 
   def reset(self) -> None:
     self._armMotor.set(0)
