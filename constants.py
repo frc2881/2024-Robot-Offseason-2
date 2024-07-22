@@ -135,21 +135,21 @@ class Subsystems:
       kTargetAlignmentPositionTolerance: float = 0.05
 
       kPositionSubwoofer: float = 7.75
-      kPositionPodium: float = 4.0
+      kPositionPodium: float = 4.25
       kPositionAmp: float = 23.0
       kPositionShuttle: float = 6.0
       kPositionIntake: float = 0.00
 
       kPositionTargets: list[LauncherArmPositionTarget] = [
         LauncherArmPositionTarget(0.00, 8.25),
-        LauncherArmPositionTarget(1.00, 8.0),
+        LauncherArmPositionTarget(0.75, 8.0),
         LauncherArmPositionTarget(1.25, kPositionSubwoofer),
-        LauncherArmPositionTarget(2.50, 4.5),
+        LauncherArmPositionTarget(2.50, 5.0),
         LauncherArmPositionTarget(2.90, kPositionPodium),
         LauncherArmPositionTarget(3.45, 3.50),
         LauncherArmPositionTarget(4.00, 2.90),
         LauncherArmPositionTarget(4.75, 2.10),
-        LauncherArmPositionTarget(5.15, 1.80),
+        LauncherArmPositionTarget(5.15, 1.85),
         LauncherArmPositionTarget(6.05, 1.60),
         LauncherArmPositionTarget(7.00, 1.40)
       ]
