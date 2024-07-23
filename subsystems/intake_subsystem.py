@@ -103,17 +103,17 @@ class IntakeSubsystem(Subsystem):
       lambda end: self.reset()
     ).withName("IntakeSubsystem:Launch")
   
-  def launchAtAmpCommand(self) -> Command:
+  def scoreAmpCommand(self) -> Command:
     return self.run(
       lambda: self._run(
         MotorDirection.Stopped, 
         MotorDirection.Forward, 
         MotorDirection.Forward, 
-        self._constants.kSpeedLaunchAmp
+        self._constants.kSpeedScoreAmp
       )
     ).finallyDo(
       lambda end: self.reset()
-    ).withName("IntakeSubsystem:LaunchAmp")
+    ).withName("IntakeSubsystem:ScoreAmp")
 
   def _run(self, rollers: MotorDirection, top: MotorDirection, bottom: MotorDirection, speed: units.percent = 0) -> None:
     self._rollersMotor.set(self._getSpeed(speed, rollers))

@@ -105,10 +105,10 @@ class GameCommands:
       self.alignLauncherToPositionCommand(position, launcherRollerSpeeds)
     ).withName("GameCommands:LaunchAtPosition")
   
-  def launchAtAmpCommand(self) -> Command:
+  def scoreAmpCommand(self) -> Command:
     return cmd.sequence(
-      self.robot.intakeSubsystem.launchAtAmpCommand()
-    ).withName("GameCommands:LaunchAtAmp")
+      self.robot.intakeSubsystem.scoreAmpCommand()
+    ).withName("GameCommands:ScoreAmp")
   
   def rumbleControllersCommand(self, mode: ControllerRumbleMode, pattern: ControllerRumblePattern) -> Command:
     return cmd.parallel(

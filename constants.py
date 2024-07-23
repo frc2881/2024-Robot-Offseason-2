@@ -105,7 +105,7 @@ class Subsystems:
     kSpeedAlign: units.percent = 0.3
     kSpeedEject: units.percent = 0.6
     kSpeedLaunch: units.percent = 1.0
-    kSpeedLaunchAmp: units.percent = .45
+    kSpeedScoreAmp: units.percent = .45
 
     kDistanceIntake: units.millimeters = 20.0
     kDistanceLauncherReadyMin: units.millimeters = 10.0

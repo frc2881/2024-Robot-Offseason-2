@@ -114,9 +114,6 @@ class LauncherArmSubsystem(Subsystem):
 
   def hasInitialZeroReset(self) -> bool:
     return self._hasInitialZeroReset
-  
-  def isPositionAmp(self) -> bool:
-    return self._armEncoder.getPosition() > 20
 
   def reset(self) -> None:
     self._armMotor.set(0)
