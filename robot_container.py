@@ -93,12 +93,13 @@ class RobotContainer:
         lambda: self.driverController.getLeftX(),
         lambda: self.driverController.getRightX()
     ))
-    self.driverController.rightTrigger().and_(
-      (self.driverController.leftTrigger().or_(
+    self.driverController.rightTrigger().and_((
+        self.driverController.leftTrigger().or_(
         self.driverController.leftBumper()).or_(
-          self.driverController.a()).or_(
-            self.driverController.b()).or_(
-              self.driverController.x())).negate()
+        self.driverController.a()).or_(
+        self.driverController.b()).or_(
+        self.driverController.x())
+      ).negate()
     ).whileTrue(self.gameCommands.runIntakeCommand())
     self.driverController.rightTrigger().and_(self.driverController.leftTrigger()).whileTrue(self.gameCommands.runLauncherCommand())
     self.driverController.rightTrigger().and_(self.driverController.leftBumper()).whileTrue(self.gameCommands.runLauncherCommand())
@@ -116,8 +117,8 @@ class RobotContainer:
     # self.driverController.povRight().whileTrue(cmd.none())
     self.driverController.a().whileTrue(self.gameCommands.alignLauncherToAmpCommand())
     self.driverController.b().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionSubwoofer))
-    self.driverController.y().whileTrue(self.gameCommands.reloadIntakeCommand())
-    self.driverController.x().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionPodium))
+    self.driverController.y().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionPodium))
+    # self.driverController.x().whileTrue(cmd.none())
     self.driverController.start().onTrue(self.gyroSensor.calibrateCommand())
     self.driverController.back().onTrue(self.gyroSensor.resetCommand())
 
@@ -128,10 +129,10 @@ class RobotContainer:
     ))
     self.operatorController.rightTrigger().and_(
       self.operatorController.leftTrigger().or_(
-        self.operatorController.povUp()).or_(
-          self.operatorController.povDown()).or_(
-            self.operatorController.povLeft()).or_(
-              self.operatorController.povRight())
+      self.operatorController.povUp()).or_(
+      self.operatorController.povDown()).or_(
+      self.operatorController.povLeft()).or_(
+      self.operatorController.povRight())
     ).whileTrue(self.gameCommands.runLauncherCommand())
     self.operatorController.leftTrigger().whileTrue(self.gameCommands.alignLauncherToTargetCommand())
     self.operatorController.rightBumper().and_(self.operatorController.leftBumper()).whileTrue(self.gameCommands.launchAtAmpCommand())
