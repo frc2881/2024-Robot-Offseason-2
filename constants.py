@@ -105,14 +105,14 @@ class Subsystems:
     kSpeedAlign: units.percent = 0.3
     kSpeedEject: units.percent = 0.6
     kSpeedLaunch: units.percent = 1.0
-    kSpeedScoreAmp: units.percent = .45
+    kSpeedScoreAmp: units.percent = .5
 
     kDistanceIntake: units.millimeters = 20.0
     kDistanceLauncherReadyMin: units.millimeters = 10.0
     kDistanceLauncherReadyMax: units.millimeters = 150.0
 
     kAlignTimeout: units.seconds = 0.08
-    kReloadTimeout: units.seconds = 0.06
+    kReloadTimeout: units.seconds = 0.2
 
   class Launcher:
     class Arm:
@@ -123,7 +123,7 @@ class Subsystems:
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
       kMotorForwardSoftLimit: float = 23.0
-      kMotorReverseSoftLimit: float = 0.0
+      kMotorReverseSoftLimit: float = 0
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
@@ -137,7 +137,7 @@ class Subsystems:
       kPositionSubwoofer: float = 7.75
       kPositionPodium: float = 4.25
       kPositionAmp: float = 23.0
-      kPositionShuttle: float = 6.0
+      kPositionShuttle: float = 5.0
       kPositionIntake: float = 0.00
 
       kPositionTargets: list[LauncherArmPositionTarget] = [
@@ -165,8 +165,7 @@ class Subsystems:
       kMotorMaxReverseOutput: units.percent = -1.0
 
       kSpeedsDefault = LauncherRollersSpeeds(1.0, 1.0)
-      kSpeedsAmp = LauncherRollersSpeeds(0.3, 0.3)
-      kSpeedsShuttle = LauncherRollersSpeeds(0.9, 0.9)
+      kSpeedsShuttle = LauncherRollersSpeeds(1.0, 1.0)
 
       kLaunchSpeedDeltaMin: units.percent = 0.95
 

@@ -123,7 +123,7 @@ class RobotContainer:
     self.driverController.back().onTrue(self.gyroSensor.resetCommand())
 
     # OPERATOR ========================================
-    self.launcherArmSubsystem.setDefaultCommand(
+    self.operatorController.leftY().whileTrue(
       self.launcherArmSubsystem.runCommand(
         lambda: self.operatorController.getLeftY()
     ))

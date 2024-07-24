@@ -37,9 +37,12 @@ class GameCommands:
           lambda: self.robot.localizationSubsystem.getPose(), 
           lambda: self.robot.localizationSubsystem.getTargetHeading()
         ),
-        self.rumbleControllersCommand(ControllerRumbleMode.Operator, ControllerRumblePattern.Short)
-      ),
-      self.rumbleControllersCommand(ControllerRumbleMode.Driver, ControllerRumblePattern.Short)
+        self.rumbleControllersCommand(ControllerRumbleMode.Operator, ControllerRumblePattern.Short),
+        cmd.sequence(
+          cmd.waitUntil(lambda: self.robot.driveSubsystem.isAlignedToTarget()),
+          self.rumbleControllersCommand(ControllerRumbleMode.Driver, ControllerRumblePattern.Short)
+        )
+      )
     ).withName("GameCommands:AlignRobotToTarget")
 
   def alignLauncherToTargetCommand(self) -> Command:
