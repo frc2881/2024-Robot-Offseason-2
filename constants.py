@@ -40,7 +40,7 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    kPathFindingConstraints = PathConstraints(4.2, 2.8, units.degreesToRadians(540), units.degreesToRadians(720))
+    kPathFindingConstraints = PathConstraints(4.2, 2.8, units.degreesToRadians(360), units.degreesToRadians(540))
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
     kSwerveModuleFrontLeftTurningMotorCANId: int = 4
@@ -98,20 +98,20 @@ class Subsystems:
     kBottomMotorCANId: int = 13
 
     kMotorCurrentLimit: units.amperes = 60
-    kMotorMaxForwardOutput: units.percent = 0.8
-    kMotorMaxReverseOutput: units.percent = -0.8
+    kMotorMaxForwardOutput: units.percent = 1.0
+    kMotorMaxReverseOutput: units.percent = -1.0
 
-    kSpeedIntake: units.percent = 0.8
-    kSpeedAlign: units.percent = 0.3
+    kSpeedIntake: units.percent = 0.6
+    kSpeedAlign: units.percent = 0.4
     kSpeedEject: units.percent = 0.6
     kSpeedLaunch: units.percent = 1.0
-    kSpeedScoreAmp: units.percent = .5
+    kSpeedScoreAmp: units.percent = 0.3
 
-    kDistanceIntake: units.millimeters = 20.0
-    kDistanceLauncherReadyMin: units.millimeters = 10.0
-    kDistanceLauncherReadyMax: units.millimeters = 150.0
+    kDistanceIntake: units.millimeters = 60.0
+    kDistanceLauncherReadyMin: units.millimeters = 1.0
+    kDistanceLauncherReadyMax: units.millimeters = 220.0
 
-    kAlignTimeout: units.seconds = 0.08
+    kAlignTimeout: units.seconds = 0.8
     kReloadTimeout: units.seconds = 0.2
 
   class Launcher:
@@ -122,7 +122,7 @@ class Subsystems:
       kMotorMaxReverseOutput: units.percent = -1.0
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
-      kMotorForwardSoftLimit: float = 23.0
+      kMotorForwardSoftLimit: float = 22.5
       kMotorReverseSoftLimit: float = 0
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
@@ -135,7 +135,7 @@ class Subsystems:
       kTargetAlignmentPositionTolerance: float = 0.05
 
       kPositionSubwoofer: float = 7.75
-      kPositionPodium: float = 4.25
+      kPositionPodium: float = 4.3
       kPositionAmp: float = 23.0
       kPositionShuttle: float = 5.0
       kPositionIntake: float = 0.00
@@ -144,7 +144,7 @@ class Subsystems:
         LauncherArmPositionTarget(0.00, 8.25),
         LauncherArmPositionTarget(0.75, 8.0),
         LauncherArmPositionTarget(1.25, kPositionSubwoofer),
-        LauncherArmPositionTarget(2.50, 5.0),
+        LauncherArmPositionTarget(2.50, 5.1),
         LauncherArmPositionTarget(2.90, kPositionPodium),
         LauncherArmPositionTarget(3.45, 3.50),
         LauncherArmPositionTarget(4.00, 2.90),
@@ -172,7 +172,7 @@ class Subsystems:
 class Sensors:
   class Gyro:
     class NAVX2:
-      kSerialPort = SerialPort.Port.kUSB
+      kSerialPort = SerialPort.Port.kUSB1
 
   class Pose:
     kPoseSensors: dict[str, Transform3d] = {
@@ -201,7 +201,7 @@ _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Cresce
 
 class Game:
   class Commands:
-    kScoringAlignmentTimeout: units.seconds = 0.5
+    kScoringAlignmentTimeout: units.seconds = 0.75
     kScoringLaunchTimeout: units.seconds = 1.25
 
   class Field:
