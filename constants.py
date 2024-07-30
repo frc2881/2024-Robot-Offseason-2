@@ -40,7 +40,7 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    kPathFindingConstraints = PathConstraints(4.2, 2.8, units.degreesToRadians(360), units.degreesToRadians(540))
+    kPathFindingConstraints = PathConstraints(4.4, 3.2, units.degreesToRadians(360), units.degreesToRadians(540))
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
     kSwerveModuleFrontLeftTurningMotorCANId: int = 4
@@ -103,7 +103,7 @@ class Subsystems:
 
     kSpeedIntake: units.percent = 0.6
     kSpeedAlign: units.percent = 0.4
-    kSpeedEject: units.percent = 0.6
+    kSpeedEject: units.percent = 0.5
     kSpeedLaunch: units.percent = 1.0
     kSpeedScoreAmp: units.percent = 0.3
 
@@ -111,7 +111,7 @@ class Subsystems:
     kDistanceLauncherReadyMin: units.millimeters = 1.0
     kDistanceLauncherReadyMax: units.millimeters = 220.0
 
-    kAlignTimeout: units.seconds = 0.8
+    kAlignTimeout: units.seconds = 0.6
     kReloadTimeout: units.seconds = 0.2
 
   class Launcher:
@@ -134,17 +134,17 @@ class Subsystems:
 
       kTargetAlignmentPositionTolerance: float = 0.05
 
-      kPositionSubwoofer: float = 7.75
+      kPositionSubwoofer: float = 7.5
       kPositionPodium: float = 4.3
       kPositionAmp: float = 23.0
       kPositionShuttle: float = 5.0
       kPositionIntake: float = 0.00
 
       kPositionTargets: list[LauncherArmPositionTarget] = [
-        LauncherArmPositionTarget(0.00, 8.25),
-        LauncherArmPositionTarget(0.75, 8.0),
+        LauncherArmPositionTarget(0.00, 8.2),
+        LauncherArmPositionTarget(0.75, 7.9),
         LauncherArmPositionTarget(1.25, kPositionSubwoofer),
-        LauncherArmPositionTarget(2.50, 5.1),
+        LauncherArmPositionTarget(2.50, 4.9),
         LauncherArmPositionTarget(2.90, kPositionPodium),
         LauncherArmPositionTarget(3.45, 3.50),
         LauncherArmPositionTarget(4.00, 2.90),
@@ -202,7 +202,7 @@ _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Cresce
 class Game:
   class Commands:
     kScoringAlignmentTimeout: units.seconds = 0.75
-    kScoringLaunchTimeout: units.seconds = 1.25
+    kScoringLaunchTimeout: units.seconds = 1.1
 
   class Field:
     kAprilTagFieldLayout = _aprilTagFieldLayout
@@ -230,12 +230,12 @@ class Game:
       AutoPath.ScorePreload2: PathPlannerPath.fromPathFile(AutoPath.ScorePreload2.name),
       AutoPath.ScorePreload3: PathPlannerPath.fromPathFile(AutoPath.ScorePreload3.name),
       AutoPath.Pickup1: PathPlannerPath.fromPathFile(AutoPath.Pickup1.name),
-      AutoPath.Pickup13: PathPlannerPath.fromPathFile(AutoPath.Pickup13.name),
+      AutoPath.Pickup12: PathPlannerPath.fromPathFile(AutoPath.Pickup12.name),
       AutoPath.Pickup2: PathPlannerPath.fromPathFile(AutoPath.Pickup2.name),
       AutoPath.Pickup21: PathPlannerPath.fromPathFile(AutoPath.Pickup21.name),
       AutoPath.Pickup23: PathPlannerPath.fromPathFile(AutoPath.Pickup23.name),
       AutoPath.Pickup3: PathPlannerPath.fromPathFile(AutoPath.Pickup3.name),
-      AutoPath.Pickup31: PathPlannerPath.fromPathFile(AutoPath.Pickup31.name),
+      AutoPath.Pickup32: PathPlannerPath.fromPathFile(AutoPath.Pickup32.name),
       AutoPath.Pickup4: PathPlannerPath.fromPathFile(AutoPath.Pickup4.name),
       AutoPath.Pickup5: PathPlannerPath.fromPathFile(AutoPath.Pickup5.name),
       AutoPath.Pickup61: PathPlannerPath.fromPathFile(AutoPath.Pickup61.name),

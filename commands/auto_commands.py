@@ -90,7 +90,7 @@ class AutoCommands:
       self._score(), 
       self._pickup(self._getPath(AutoPath.Pickup21)),
       self._score(),
-      self._pickup(self._getPath(AutoPath.Pickup31)),
+      self._pickup(self._getPath(AutoPath.Pickup32)),
       self._score()
     ).withName("AutoCommands:Auto1_0_1_2_3")
     
@@ -102,7 +102,7 @@ class AutoCommands:
       self._score(), 
       self._pickup(self._getPath(AutoPath.Pickup21)),
       self._score(),
-      self._pickup(self._getPath(AutoPath.Pickup31)),
+      self._pickup(self._getPath(AutoPath.Pickup32)),
       self._score(),
       self._pickup(self._getPath(AutoPath.Pickup8)),
       self._move(self._getPath(AutoPath.ScoreStage3)),
@@ -289,7 +289,7 @@ class AutoCommands:
       self._score(),
       self._pickup(self._getPath(AutoPath.Pickup2)),
       self._score(), 
-      self._pickup(self._getPath(AutoPath.Pickup13)),
+      self._pickup(self._getPath(AutoPath.Pickup12)),
       self._score()
     ).withName("AutoCommands:Auto2_0_2_1")
    
@@ -299,7 +299,7 @@ class AutoCommands:
       self._score(),
       self._pickup(self._getPath(AutoPath.Pickup2)),
       self._score(), 
-      self._pickup(self._getPath(AutoPath.Pickup31)),
+      self._pickup(self._getPath(AutoPath.Pickup32)),
       self._score()
     ).withName("AutoCommands:Auto2_0_2_3")
    
@@ -309,7 +309,7 @@ class AutoCommands:
       self._score(),
       self._pickup(self._getPath(AutoPath.Pickup2)),
       self._score(), 
-      self._pickup(self._getPath(AutoPath.Pickup31)),
+      self._pickup(self._getPath(AutoPath.Pickup32)),
       self._score(),
       self._pickup(self._getPath(AutoPath.Pickup63)),
       self._move(self._getPath(AutoPath.ScoreStage2)),
@@ -381,7 +381,7 @@ class AutoCommands:
       self._score(), 
       self._pickup(self._getPath(AutoPath.Pickup23)),
       self._score(),
-      self._pickup(self._getPath(AutoPath.Pickup13)),
+      self._pickup(self._getPath(AutoPath.Pickup12)),
       self._score()
     ).withName("AutoCommands:Auto3_0_3_2_1")
    
@@ -393,7 +393,7 @@ class AutoCommands:
       self._score(), 
       self._pickup(self._getPath(AutoPath.Pickup23)),
       self._score(),
-      self._pickup(self._getPath(AutoPath.Pickup13)),
+      self._pickup(self._getPath(AutoPath.Pickup12)),
       self._score(),
       self._pickup(self._getPath(AutoPath.Pickup4)),
       self._move(self._getPath(AutoPath.ScoreStage1)),
@@ -408,7 +408,7 @@ class AutoCommands:
       self._score(), 
       self._pickup(self._getPath(AutoPath.Pickup23)),
       self._score(),
-      self._pickup(self._getPath(AutoPath.Pickup13)),
+      self._pickup(self._getPath(AutoPath.Pickup12)),
       self._score(),
       self._pickup(self._getPath(AutoPath.Pickup5)),
       self._move(self._getPath(AutoPath.ScoreStage1)),
