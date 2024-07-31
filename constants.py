@@ -22,8 +22,8 @@ class Subsystems:
     kWheelBase: units.meters = units.inchesToMeters(24.5)
     kDriveBaseRadius: units.meters = Translation2d().distance(Translation2d(kWheelBase / 2, kTrackWidth / 2))
 
-    kMaxSpeedMetersPerSecond: units.meters_per_second = 4.8
-    kMaxAngularSpeed: units.radians_per_second = 2 * math.pi
+    kTranslationSpeedMax: units.meters_per_second = 4.8
+    kRotationSpeedMax: units.radians_per_second = 2 * math.pi
 
     kInputLimit: units.percent = 0.6
     kInputRateLimit: units.percent = 0.5

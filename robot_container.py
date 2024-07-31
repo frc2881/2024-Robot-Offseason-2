@@ -162,7 +162,7 @@ class RobotContainer:
       HolonomicPathFollowerConfig(
         constants.Subsystems.Drive.kPathFollowerTranslationPIDConstants,
         constants.Subsystems.Drive.kPathFollowerRotationPIDConstants,
-        constants.Subsystems.Drive.kMaxSpeedMetersPerSecond, 
+        constants.Subsystems.Drive.kTranslationSpeedMax, 
         constants.Subsystems.Drive.kDriveBaseRadius, 
         ReplanningConfig()
       ),
