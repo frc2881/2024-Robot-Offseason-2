@@ -40,7 +40,7 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    kPathFindingConstraints = PathConstraints(4.4, 3.2, units.degreesToRadians(360), units.degreesToRadians(540))
+    kPathFindingConstraints = PathConstraints(4.4, 2.8, units.degreesToRadians(360), units.degreesToRadians(540))
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
     kSwerveModuleFrontLeftTurningMotorCANId: int = 4
@@ -101,18 +101,18 @@ class Subsystems:
     kMotorMaxForwardOutput: units.percent = 1.0
     kMotorMaxReverseOutput: units.percent = -1.0
 
-    kSpeedIntake: units.percent = 0.6
-    kSpeedAlign: units.percent = 0.4
-    kSpeedEject: units.percent = 0.5
+    kSpeedIntake: units.percent = 0.8
+    kSpeedAlign: units.percent = 0.1
+    kSpeedEject: units.percent = 0.3
     kSpeedLaunch: units.percent = 1.0
     kSpeedScoreAmp: units.percent = 0.3
 
-    kDistanceIntake: units.millimeters = 60.0
+    kDistanceIntake: units.millimeters = 40.0
     kDistanceLauncherReadyMin: units.millimeters = 1.0
     kDistanceLauncherReadyMax: units.millimeters = 220.0
 
-    kAlignTimeout: units.seconds = 0.6
-    kReloadTimeout: units.seconds = 0.2
+    kAlignTimeout: units.seconds = 0.2
+    kReloadTimeout: units.seconds = 0.4
 
   class Launcher:
     class Arm:
@@ -201,7 +201,7 @@ _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Cresce
 
 class Game:
   class Commands:
-    kScoringAlignmentTimeout: units.seconds = 0.75
+    kScoringAlignmentTimeout: units.seconds = 0.9
     kScoringLaunchTimeout: units.seconds = 1.1
 
   class Field:
