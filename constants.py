@@ -135,7 +135,7 @@ class Subsystems:
       kTargetAlignmentPositionTolerance: float = 0.05
 
       kPositionSubwoofer: float = 7.5
-      kPositionPodium: float = 4.3
+      kPositionPodium: float = 4.7
       kPositionAmp: float = 23.0
       kPositionShuttle: float = 5.0
       kPositionIntake: float = 0.00
@@ -144,11 +144,11 @@ class Subsystems:
         LauncherArmPositionTarget(0.00, 8.2),
         LauncherArmPositionTarget(0.75, 7.9),
         LauncherArmPositionTarget(1.25, kPositionSubwoofer),
-        LauncherArmPositionTarget(2.50, 4.9),
+        LauncherArmPositionTarget(2.50, 5.3),
         LauncherArmPositionTarget(2.90, kPositionPodium),
-        LauncherArmPositionTarget(3.45, 3.50),
-        LauncherArmPositionTarget(4.00, 2.90),
-        LauncherArmPositionTarget(4.75, 2.10),
+        LauncherArmPositionTarget(3.45, 3.80),
+        LauncherArmPositionTarget(4.00, 3.20),
+        LauncherArmPositionTarget(4.75, 2.30),
         LauncherArmPositionTarget(5.15, 1.85),
         LauncherArmPositionTarget(6.05, 1.60),
         LauncherArmPositionTarget(7.00, 1.40)
@@ -201,8 +201,8 @@ _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Cresce
 
 class Game:
   class Commands:
-    kScoringAlignmentTimeout: units.seconds = 0.9
-    kScoringLaunchTimeout: units.seconds = 1.1
+    kScoringAlignmentTimeout: units.seconds = 1.2
+    kScoringLaunchTimeout: units.seconds = 1.35
 
   class Field:
     kAprilTagFieldLayout = _aprilTagFieldLayout

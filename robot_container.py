@@ -198,7 +198,7 @@ class RobotContainer:
     self._autoChooser.addOption("[ 2 ] _0_2_72_62", lambda: self.autoCommands.auto2_0_2_72_62()) 
     self._autoChooser.addOption("[ 2 ] _0_2_1", lambda: self.autoCommands.auto2_0_2_1()) 
     self._autoChooser.addOption("[ 2 ] _0_2_3", lambda: self.autoCommands.auto2_0_2_3()) 
-    self._autoChooser.addOption("[ 2 ] _0_2_3_1", lambda: self.autoCommands.auto2_0_2_3_62()) 
+    self._autoChooser.addOption("[ 2 ] _0_2_3_62", lambda: self.autoCommands.auto2_0_2_3_62()) 
 
     self._autoChooser.addOption("[ 3 ] 0", lambda: self.autoCommands.auto0())
     self._autoChooser.addOption("[ 3 ] 0_3", lambda: self.autoCommands.auto30_3())
