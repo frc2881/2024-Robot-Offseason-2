@@ -22,8 +22,8 @@ class Subsystems:
     kWheelBase: units.meters = units.inchesToMeters(24.5)
     kDriveBaseRadius: units.meters = Translation2d().distance(Translation2d(kWheelBase / 2, kTrackWidth / 2))
 
-    kTranslationSpeedMax: units.meters_per_second = 4.8
-    kRotationSpeedMax: units.radians_per_second = 2 * math.pi
+    kTranslationSpeedMax: units.meters_per_second = 6.32
+    kRotationSpeedMax: units.radians_per_second = 4 * math.pi
 
     kInputLimit: units.percent = 0.6
     kInputRateLimit: units.percent = 0.5
@@ -40,7 +40,7 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    kPathFindingConstraints = PathConstraints(4.4, 2.8, units.degreesToRadians(360), units.degreesToRadians(540))
+    kPathFindingConstraints = PathConstraints(4.8, 3.2, units.degreesToRadians(540), units.degreesToRadians(720))
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
     kSwerveModuleFrontLeftTurningMotorCANId: int = 4
@@ -69,7 +69,7 @@ class Subsystems:
     )
 
     class SwerveModule:
-      kFreeSpeed: units.revolutions_per_minute = 5676
+      kFreeSpeed: units.revolutions_per_minute = 6784
       kWheelDiameter: units.meters = units.inchesToMeters(3.0)
       kWheelCircumference: units.meters = kWheelDiameter * math.pi
       kDrivingMotorPinionTeeth: int = 14
@@ -184,6 +184,14 @@ class Sensors:
         Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
       )
+      # "Left": Transform3d(
+      #   Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
+      #   Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
+      # ),
+      # "Right": Transform3d(
+      #   Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
+      #   Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
+      # )
     }
     kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
     kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY
