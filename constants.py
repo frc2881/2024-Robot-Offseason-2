@@ -205,6 +205,15 @@ class Sensors:
       kMinTargetDistance: units.millimeters = 1
       kMaxTargetDistance: units.millimeters = 320
 
+  class Camera:
+    kStreams: dict[str, str] = {
+      "Rear": "http://10.28.81.6:1182/?action=stream",
+      "Front": "http://10.28.81.6:1184/?action=stream",
+      "Left": "http://10.28.81.7:1184/?action=stream",
+      "Right": "http://10.28.81.6:1186/?action=stream",
+      "Driver": "http://10.28.81.7:1182/?action=stream"
+    }
+
 _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
 
 class Game:

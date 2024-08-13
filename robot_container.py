@@ -51,6 +51,7 @@ class RobotContainer:
       constants.Sensors.Distance.Launcher.kMinTargetDistance,
       constants.Sensors.Distance.Launcher.kMaxTargetDistance
     )
+    SmartDashboard.putString("Robot/Sensor/Camera/Streams", utils.toJson(constants.Sensors.Camera.kStreams))
 
   def _initSubsystems(self) -> None:
     self.driveSubsystem = DriveSubsystem(
