@@ -20,33 +20,57 @@ class LauncherArmSubsystem(Subsystem):
     
     SmartDashboard.putString("Robot/Launcher/Arm/Positions", utils.toJson(self._constants.kPositionTargets))
 
-    self._armMotor = CANSparkMax(self._constants.kMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
-    self._armEncoder = self._armMotor.getEncoder()
-    self._armPIDController = self._armMotor.getPIDController()
-    utils.validateParam(self._armMotor.restoreFactoryDefaults())
-    utils.validateParam(self._armMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
-    utils.validateParam(self._armMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
-    utils.validateParam(self._armMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
-    utils.validateParam(self._armMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, True))
-    utils.validateParam(self._armMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, self._constants.kMotorForwardSoftLimit))
-    utils.validateParam(self._armMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, True))
-    utils.validateParam(self._armMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, self._constants.kMotorReverseSoftLimit))
-    utils.validateParam(self._armEncoder.setPositionConversionFactor(self._constants.kMotorPositionConversionFactor))
-    utils.validateParam(self._armEncoder.setVelocityConversionFactor(self._constants.kMotorVelocityConversionFactor))
-    utils.validateParam(self._armPIDController.setFeedbackDevice(self._armEncoder))
-    utils.validateParam(self._armPIDController.setP(self._constants.kMotorPIDConstants.P))
-    utils.validateParam(self._armPIDController.setD(self._constants.kMotorPIDConstants.D))
-    utils.validateParam(self._armPIDController.setOutputRange(self._constants.kMotorMaxReverseOutput, self._constants.kMotorMaxForwardOutput))
-    utils.validateParam(self._armPIDController.setSmartMotionMaxVelocity(self._constants.kMotorSmartMotionMaxVelocity, 0))
-    utils.validateParam(self._armPIDController.setSmartMotionMaxAccel(self._constants.kMotorSmartMotionMaxAccel, 0))
-    utils.validateParam(self._armMotor.burnFlash())
+    self._armRightMotor = CANSparkMax(self._constants.kRightMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    self._armRightEncoder = self._armRightMotor.getEncoder()
+    self._armRightPIDController = self._armRightMotor.getPIDController()
+    utils.validateParam(self._armRightMotor.restoreFactoryDefaults())
+    utils.validateParam(self._armRightMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
+    utils.validateParam(self._armRightMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._armRightMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._armRightMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, True))
+    utils.validateParam(self._armRightMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, self._constants.kMotorForwardSoftLimit))
+    utils.validateParam(self._armRightMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, True))
+    utils.validateParam(self._armRightMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, self._constants.kMotorReverseSoftLimit))
+    utils.validateParam(self._armRightEncoder.setPositionConversionFactor(self._constants.kMotorPositionConversionFactor))
+    utils.validateParam(self._armRightEncoder.setVelocityConversionFactor(self._constants.kMotorVelocityConversionFactor))
+    utils.validateParam(self._armRightPIDController.setFeedbackDevice(self._armRightEncoder))
+    utils.validateParam(self._armRightPIDController.setP(self._constants.kMotorPIDConstants.P))
+    utils.validateParam(self._armRightPIDController.setD(self._constants.kMotorPIDConstants.D))
+    utils.validateParam(self._armRightPIDController.setOutputRange(self._constants.kMotorMaxReverseOutput, self._constants.kMotorMaxForwardOutput))
+    utils.validateParam(self._armRightPIDController.setSmartMotionMaxVelocity(self._constants.kMotorSmartMotionMaxVelocity, 0))
+    utils.validateParam(self._armRightPIDController.setSmartMotionMaxAccel(self._constants.kMotorSmartMotionMaxAccel, 0))
+    utils.validateParam(self._armRightMotor.burnFlash())
+
+    self._armLeftMotor = CANSparkMax(self._constants.kLeftMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    self._armLeftEncoder = self._armLeftMotor.getEncoder()
+    self._armLeftPIDController = self._armLeftMotor.getPIDController()
+    utils.validateParam(self._armLeftMotor.restoreFactoryDefaults())
+    utils.validateParam(self._armLeftMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
+    utils.validateParam(self._armLeftMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._armLeftMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.validateParam(self._armLeftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, True))
+    utils.validateParam(self._armLeftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, self._constants.kMotorForwardSoftLimit))
+    utils.validateParam(self._armLeftMotor.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, True))
+    utils.validateParam(self._armLeftMotor.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, self._constants.kMotorReverseSoftLimit))
+    utils.validateParam(self._armLeftEncoder.setPositionConversionFactor(self._constants.kMotorPositionConversionFactor))
+    utils.validateParam(self._armLeftEncoder.setVelocityConversionFactor(self._constants.kMotorVelocityConversionFactor))
+    utils.validateParam(self._armLeftPIDController.setFeedbackDevice(self._armLeftEncoder))
+    utils.validateParam(self._armLeftPIDController.setP(self._constants.kMotorPIDConstants.P))
+    utils.validateParam(self._armLeftPIDController.setD(self._constants.kMotorPIDConstants.D))
+    utils.validateParam(self._armLeftPIDController.setOutputRange(self._constants.kMotorMaxReverseOutput, self._constants.kMotorMaxForwardOutput))
+    utils.validateParam(self._armLeftPIDController.setSmartMotionMaxVelocity(self._constants.kMotorSmartMotionMaxVelocity, 0))
+    utils.validateParam(self._armLeftPIDController.setSmartMotionMaxAccel(self._constants.kMotorSmartMotionMaxAccel, 0))
+    utils.validateParam(self._armLeftMotor.burnFlash())
 
   def periodic(self) -> None:
     self._updateTelemetry()
   
   def runCommand(self, getInput: Callable[[], units.percent]) -> Command:
     return self.run(
-      lambda: self._armMotor.set(getInput() * self._constants.kInputLimit)
+      lambda: [
+        self._armRightMotor.set(getInput() * self._constants.kInputLimit),
+        self._armLeftMotor.set(getInput() * self._constants.kInputLimit)
+       ]
     ).beforeStarting(
       lambda: self.clearTargetAlignment()
     ).finallyDo(
@@ -56,7 +80,8 @@ class LauncherArmSubsystem(Subsystem):
   def alignToPositionCommand(self, position: float) -> Command:
     return self.run(
       lambda: [
-        self._armPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
+        self._armRightPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
+        self._armLeftPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
         self._setIsAlignedToTarget(position)
       ]
     ).beforeStarting(
@@ -69,7 +94,8 @@ class LauncherArmSubsystem(Subsystem):
     return self.run(
       lambda: [
         position := self._getTargetPosition(getTargetDistance()),
-        self._armPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
+        self._armRightPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
+        self._armLeftPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
         self._setIsAlignedToTarget(position)
       ]
     ).beforeStarting(
@@ -79,7 +105,8 @@ class LauncherArmSubsystem(Subsystem):
     ).withName("LauncherArmSubsystem:AlignToTarget")
 
   def _alignToIntake(self) -> Command:
-    self._armPIDController.setReference(self._constants.kPositionIntake, CANSparkBase.ControlType.kSmartMotion)
+    self._armRightPIDController.setReference(self._constants.kPositionIntake, CANSparkBase.ControlType.kSmartMotion),
+    self._armLeftPIDController.setReference(self._constants.kPositionIntake, CANSparkBase.ControlType.kSmartMotion),
     self.clearTargetAlignment()
 
   def _getTargetPosition(self, targetDistance: units.meters) -> float:
@@ -90,7 +117,7 @@ class LauncherArmSubsystem(Subsystem):
       return self._constants.kPositionSubwoofer
 
   def _setIsAlignedToTarget(self, position: float) -> None:
-    self._isAlignedToTarget = math.fabs(self._armEncoder.getPosition() - position) <= self._constants.kTargetAlignmentPositionTolerance
+    self._isAlignedToTarget = math.fabs(self._armRightEncoder.getPosition() - position) <= self._constants.kTargetAlignmentPositionTolerance
 
   def isAlignedToTarget(self) -> bool:
     return self._isAlignedToTarget
@@ -101,13 +128,18 @@ class LauncherArmSubsystem(Subsystem):
   def resetToZeroCommand(self) -> Command:
     return self.startEnd(
       lambda: [
-        utils.enableSoftLimits(self._armMotor, False),
-        self._armMotor.set(-self._constants.kResetSpeed)
+        utils.enableSoftLimits(self._armRightMotor, False),
+        utils.enableSoftLimits(self._armLeftMotor, False),
+        self._armRightMotor.set(-self._constants.kResetSpeed),
+        self._armLeftMotor.set(-self._constants.kResetSpeed)
       ],
       lambda: [
-        self._armEncoder.setPosition(0),
-        self._armMotor.set(0),
-        utils.enableSoftLimits(self._armMotor, True),
+        self._armRightEncoder.setPosition(0),
+        self._armLeftEncoder.setPosition(0),
+        self._armRightMotor.set(0),
+        self._armLeftMotor.set(0),
+        utils.enableSoftLimits(self._armRightMotor, True),
+        utils.enableSoftLimits(self._armLeftMotor, True),
         setattr(self, "_hasInitialZeroReset", True)
       ]
     ).withName("LauncherArmSubsystem:ResetToZero")
@@ -116,9 +148,11 @@ class LauncherArmSubsystem(Subsystem):
     return self._hasInitialZeroReset
 
   def reset(self) -> None:
-    self._armMotor.set(0)
+    self._armRightMotor.set(0)
+    self._armLeftMotor.set(0)
     self.clearTargetAlignment()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putNumber("Robot/Launcher/Arm/Position", self._armEncoder.getPosition())
+    SmartDashboard.putNumber("Robot/Launcher/RightArm/Position", self._armRightEncoder.getPosition())
+    SmartDashboard.putNumber("Robot/Launcher/LeftArm/Position", self._armLeftEncoder.getPosition())
     SmartDashboard.putBoolean("Robot/Launcher/Arm/IsAlignedToTarget", self._isAlignedToTarget)

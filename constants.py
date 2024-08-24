@@ -116,11 +116,13 @@ class Subsystems:
 
   class Launcher:
     class Arm:
-      kMotorCANId: int = 14
+      kRightMotorCANId: int = 14
+      kLeftMotorCANId: int = 15
+
 
       kMotorCurrentLimit: units.amperes = 60
-      kMotorMaxReverseOutput: units.percent = -1.0
-      kMotorMaxForwardOutput: units.percent = 1.0
+      kMotorMaxReverseOutput: units.percent = -0.5
+      kMotorMaxForwardOutput: units.percent = 0.5
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
       kMotorForwardSoftLimit: float = 22.5
       kMotorReverseSoftLimit: float = 0
@@ -155,8 +157,8 @@ class Subsystems:
       ]
 
     class Rollers:
-      kBottomMotorCANId: int = 15
-      kTopMotorCANId: int = 16
+      kBottomMotorCANId: int = 16
+      kTopMotorCANId: int = 17
 
       kMotorFreeSpeed: units.revolutions_per_minute = 6784
 
@@ -183,15 +185,15 @@ class Sensors:
       "Front": Transform3d(
         Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
+      ),
+      "Left": Transform3d(
+        Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
+      ),
+      "Right": Transform3d(
+        Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
       )
-      # "Left": Transform3d(
-      #   Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
-      #   Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
-      # ),
-      # "Right": Transform3d(
-      #   Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
-      #   Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
-      # )
     }
     kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
     kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY

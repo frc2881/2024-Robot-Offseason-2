@@ -19,6 +19,7 @@ class LauncherRollersSubsystem(Subsystem):
     utils.validateParam(self._bottomMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
     utils.validateParam(self._bottomMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
     utils.validateParam(self._bottomMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
+    self._bottomMotor.setInverted(True)
     utils.validateParam(self._bottomMotor.burnFlash())
 
     self._topMotor = CANSparkFlex(self._constants.kTopMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
@@ -28,7 +29,7 @@ class LauncherRollersSubsystem(Subsystem):
     utils.validateParam(self._topMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
     utils.validateParam(self._topMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
     utils.validateParam(self._topMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
-    self._topMotor.setInverted(True)
+    self._topMotor.setInverted(False)
     utils.validateParam(self._topMotor.burnFlash())
 
     self._bottomMotorSpeedDelta: units.percent = 0
