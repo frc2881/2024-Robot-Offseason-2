@@ -3,7 +3,7 @@ import math
 from wpilib import SmartDashboard
 from wpimath import units
 from commands2 import Subsystem, Command
-from rev import CANSparkBase, CANSparkLowLevel, CANSparkMax
+from rev import CANSparkBase, CANSparkLowLevel, CANSparkFlex
 from lib import utils, logger
 import constants
 
@@ -20,7 +20,7 @@ class LauncherArmSubsystem(Subsystem):
     
     SmartDashboard.putString("Robot/Launcher/Arm/Positions", utils.toJson(self._constants.kPositionTargets))
 
-    self._armRightMotor = CANSparkMax(self._constants.kRightMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    self._armRightMotor = CANSparkFlex(self._constants.kRightMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
     self._armRightEncoder = self._armRightMotor.getEncoder()
     self._armRightPIDController = self._armRightMotor.getPIDController()
     utils.validateParam(self._armRightMotor.restoreFactoryDefaults())
@@ -41,7 +41,7 @@ class LauncherArmSubsystem(Subsystem):
     utils.validateParam(self._armRightPIDController.setSmartMotionMaxAccel(self._constants.kMotorSmartMotionMaxAccel, 0))
     utils.validateParam(self._armRightMotor.burnFlash())
 
-    self._armLeftMotor = CANSparkMax(self._constants.kLeftMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    self._armLeftMotor = CANSparkFlex(self._constants.kLeftMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
     self._armLeftEncoder = self._armLeftMotor.getEncoder()
     self._armLeftPIDController = self._armLeftMotor.getPIDController()
     utils.validateParam(self._armLeftMotor.restoreFactoryDefaults())
