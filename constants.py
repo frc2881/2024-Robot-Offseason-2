@@ -40,6 +40,7 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
+    # TODO: retune auto max velocity and acceleration speeds with updated drivetrain for this chassis
     kPathFindingConstraints = PathConstraints(4.8, 3.2, units.degreesToRadians(540), units.degreesToRadians(720))
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
@@ -111,6 +112,7 @@ class Subsystems:
     kDistanceLauncherReadyMin: units.millimeters = 1.0
     kDistanceLauncherReadyMax: units.millimeters = 220.0
 
+    # TODO: return note alignment timing/speeds in launcher with updated mechanisms
     kAlignTimeout: units.seconds = 0.2
     kReloadTimeout: units.seconds = 0.4
 
@@ -118,7 +120,6 @@ class Subsystems:
     class Arm:
       kRightMotorCANId: int = 14
       kLeftMotorCANId: int = 15
-
 
       kMotorCurrentLimit: units.amperes = 60
       kMotorMaxReverseOutput: units.percent = -0.5
@@ -129,6 +130,7 @@ class Subsystems:
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
+      # TODO: recalculate the max acceleration of the arm motors for more smoothing of control
       kMotorSmartMotionMaxAccel: float = 100.0 / kMotorVelocityConversionFactor 
 
       kInputLimit: units.percent = 0.5
@@ -136,6 +138,7 @@ class Subsystems:
 
       kTargetAlignmentPositionTolerance: float = 0.05
 
+      # TODO: retune the launch position references (distance + elevation) based on mechanical updates to the launcher rollers
       kPositionSubwoofer: float = 7.5
       kPositionPodium: float = 4.7
       kPositionAmp: float = 23.0
@@ -177,6 +180,7 @@ class Sensors:
       kSerialPort = SerialPort.Port.kUSB1
 
   class Pose:
+    # TODO: update transform measurements for all pose sensor cameras
     kPoseSensors: dict[str, Transform3d] = {
       "Rear": Transform3d(
         Translation3d(units.inchesToMeters(5.5), units.inchesToMeters(0.0), units.inchesToMeters(21.0)),
@@ -207,7 +211,13 @@ class Sensors:
       kMinTargetDistance: units.millimeters = 1
       kMaxTargetDistance: units.millimeters = 320
 
+  class Object:
+    class Intake:
+      # TODO: configure object detection camera in PhotonVision instance
+      kCameraName = "Intake"
+
   class Camera:
+    # TODO: configuration of all camera stream ports to match coprocessor setup
     kStreams: dict[str, str] = {
       "Rear": "http://10.28.81.6:1182/?action=stream",
       "Front": "http://10.28.81.6:1184/?action=stream",

@@ -46,13 +46,14 @@ class RobotContainer:
         constants.Sensors.Pose.kFallbackPoseStrategy,
         constants.Game.Field.kAprilTagFieldLayout
       ))
+    SmartDashboard.putString("Robot/Sensor/Camera/Streams", utils.toJson(constants.Sensors.Camera.kStreams))
     self.launcherDistanceSensor = DistanceSensor(
       constants.Sensors.Distance.Launcher.kSensorName,
       constants.Sensors.Distance.Launcher.kMinTargetDistance,
       constants.Sensors.Distance.Launcher.kMaxTargetDistance
     )
-    SmartDashboard.putString("Robot/Sensor/Camera/Streams", utils.toJson(constants.Sensors.Camera.kStreams))
-
+    self.intakeObjectSensor = ObjectSensor(constants.Sensors.Object.Intake.kCameraName)
+    
   def _initSubsystems(self) -> None:
     self.driveSubsystem = DriveSubsystem(
       lambda: self.gyroSensor.getHeading()

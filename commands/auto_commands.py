@@ -11,7 +11,6 @@ if TYPE_CHECKING: from commands.game_commands import GameCommands
 import constants
 from classes import AutoPath
 
-
 class AutoCommands:
   def __init__(
       self,
@@ -66,6 +65,8 @@ class AutoCommands:
   # ############################################
   # ################ POSITION 1 ################
   # ############################################
+
+  # TODO: test and consider updating all autos to score preload in place and then move to first pickup as necessary to mitigate delay in pathfinding warmup
 
   def auto10_1(self) -> Command:
     return cmd.sequence(
