@@ -122,6 +122,7 @@ class Subsystems:
       kLeftMotorCANId: int = 15
 
       kMotorCurrentLimit: units.amperes = 60
+      # TODO: recalculate the max power/speed of the arm motors based on performance/safety
       kMotorMaxReverseOutput: units.percent = -0.5
       kMotorMaxForwardOutput: units.percent = 0.5
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
