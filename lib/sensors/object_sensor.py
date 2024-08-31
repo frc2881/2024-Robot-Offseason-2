@@ -7,9 +7,11 @@ from lib import utils
 class ObjectSensor:
   def __init__(
       self, 
-      cameraName: str
+      cameraName: str,
+      targetYawOffset: float
     ) -> None:
     self._cameraName = cameraName
+    self._targetYawOffset = targetYawOffset
 
     self._baseKey = f'Robot/Sensor/Object/{self._cameraName}'
     self._photonCamera = PhotonCamera(cameraName)
@@ -33,5 +35,5 @@ class ObjectSensor:
     targetInfo = self.getTargetInfo()
     SmartDashboard.putBoolean(f'{self._baseKey}/IsConnected', self._photonCamera.isConnected())
     SmartDashboard.putBoolean(f'{self._baseKey}/HasTarget', self.hasTarget())
-    SmartDashboard.putNumber(f'{self._baseKey}/Target/Heading', targetInfo.getYaw())
+    SmartDashboard.putNumber(f'{self._baseKey}/Target/Heading', targetInfo.getYaw() + self._targetYawOffset)
     SmartDashboard.putNumber(f'{self._baseKey}/Target/Area', targetInfo.getArea())

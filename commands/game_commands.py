@@ -69,13 +69,13 @@ class GameCommands:
       self.robot.launcherArmSubsystem.alignToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionAmp)
     ).withName("GameCommands:AlignLauncherToAmp")
   
-  def alignLauncherCommand(self, launcherRollerSpeeds = constants.Subsystems.Launcher.Rollers.kSpeedsDefault) -> Command:
+  def alignLauncherManualCommand(self, launcherRollerSpeeds = constants.Subsystems.Launcher.Rollers.kSpeedsDefault) -> Command:
     return cmd.sequence(
       self.robot.intakeSubsystem.alignCommand(),
       cmd.parallel(
         self.robot.launcherRollersSubsystem.runCommand(launcherRollerSpeeds)
       )
-    ).withName("GameCommands:AlignLauncher")
+    ).withName("GameCommands:AlignLauncherManual")
   
   def runLauncherCommand(self) -> Command:
     return cmd.sequence(

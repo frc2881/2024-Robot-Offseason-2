@@ -139,7 +139,7 @@ class Subsystems:
       # TODO: retune the launch position references (distance + elevation) based on mechanical updates to the launcher rollers
       kPositionSubwoofer: float = 7.2
       kPositionPodium: float = 3.2
-      kPositionAmp: float = 23.0
+      kPositionAmp: float = 22.5
       kPositionShuttle: float = 5.0
       kPositionIntake: float = 0.00
 
@@ -211,6 +211,8 @@ class Sensors:
   class Object:
     class Intake:
       kCameraName = "Intake"
+      # TODO: tune target yaw offset based on object detection camera delta from center of robot
+      kTargetYawOffset: units.degrees = 5.0
 
   class Camera:
     kStreams: dict[str, str] = {

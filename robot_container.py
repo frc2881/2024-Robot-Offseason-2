@@ -52,7 +52,10 @@ class RobotContainer:
       constants.Sensors.Distance.Launcher.kMinTargetDistance,
       constants.Sensors.Distance.Launcher.kMaxTargetDistance
     )
-    self.intakeObjectSensor = ObjectSensor(constants.Sensors.Object.Intake.kCameraName)
+    self.intakeObjectSensor = ObjectSensor(
+      constants.Sensors.Object.Intake.kCameraName,
+      constants.Sensors.Object.Intake.kTargetYawOffset
+    )
     
   def _initSubsystems(self) -> None:
     self.driveSubsystem = DriveSubsystem(
@@ -144,7 +147,7 @@ class RobotContainer:
     # self.operatorController.leftStick().whileTrue(cmd.none())
     self.operatorController.povUp().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionShuttle))
     self.operatorController.povDown().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionSubwoofer))
-    self.operatorController.povLeft().whileTrue(self.gameCommands.alignLauncherCommand()) # for manual launcher tuning only
+    self.operatorController.povLeft().whileTrue(self.gameCommands.alignLauncherManualCommand()) # for manual launcher targeting and tuning only
     self.operatorController.povRight().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionPodium))
     # self.operatorController.a().whileTrue(cmd.none())
     # self.operatorController.b().whileTrue(cmd.none())
