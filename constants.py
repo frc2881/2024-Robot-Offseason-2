@@ -122,17 +122,15 @@ class Subsystems:
       kLeftMotorCANId: int = 15
 
       kMotorCurrentLimit: units.amperes = 60
-      # TODO: recalculate the max power/speed of the arm motors based on performance/safety
-      kMotorMaxReverseOutput: units.percent = -0.5
-      kMotorMaxForwardOutput: units.percent = 0.5
+      kMotorMaxReverseOutput: units.percent = -0.8
+      kMotorMaxForwardOutput: units.percent = 0.8
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
       kMotorForwardSoftLimit: float = 22.5
       kMotorReverseSoftLimit: float = 0
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
-      # TODO: recalculate the max acceleration of the arm motors for more smoothing of control
-      kMotorSmartMotionMaxAccel: float = 100.0 / kMotorVelocityConversionFactor 
+      kMotorSmartMotionMaxAccel: float = 50.0 / kMotorVelocityConversionFactor 
 
       kInputLimit: units.percent = 0.5
       kResetSpeed: units.percent = 0.1
