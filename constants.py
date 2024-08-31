@@ -184,20 +184,20 @@ class Sensors:
     # TODO: update transform measurements for all pose sensor cameras
     kPoseSensors: dict[str, Transform3d] = {
       "Rear": Transform3d(
-        Translation3d(units.inchesToMeters(5.5), units.inchesToMeters(0.0), units.inchesToMeters(21.0)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.3), units.degreesToRadians(-180.0))
+        Translation3d(units.inchesToMeters(6.10), units.inchesToMeters(0.0), units.inchesToMeters(20.59)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-28.4), units.degreesToRadians(-180.0))
       ),
       "Front": Transform3d(
-        Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
+        Translation3d(units.inchesToMeters(9.44), units.inchesToMeters(3.75), units.inchesToMeters(21.42)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-25.8), units.degreesToRadians(0.0))
       ),
       "Left": Transform3d(
-        Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
+        Translation3d(units.inchesToMeters(8.82), units.inchesToMeters(12.44), units.inchesToMeters(17.32)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-29.1), units.degreesToRadians(90.0))
       ),
       "Right": Transform3d(
-        Translation3d(units.inchesToMeters(8.75), units.inchesToMeters(4.25), units.inchesToMeters(21.75)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.0), units.degreesToRadians(0.0))
+        Translation3d(units.inchesToMeters(8.82), units.inchesToMeters(-12.56), units.inchesToMeters(17.13)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-22.0), units.degreesToRadians(-90.0))
       )
     }
     kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
@@ -222,9 +222,9 @@ class Sensors:
     kStreams: dict[str, str] = {
       "Rear": "http://10.28.81.6:1182/?action=stream",
       "Front": "http://10.28.81.6:1184/?action=stream",
-      "Left": "http://10.28.81.7:1184/?action=stream",
-      "Right": "http://10.28.81.6:1186/?action=stream",
-      "Driver": "http://10.28.81.7:1182/?action=stream"
+      "Left": "http://10.28.81.7:1182/?action=stream",
+      "Right": "http://10.28.81.7:1184/?action=stream",
+      "Driver": "http://10.28.81.7:1186/?action=stream"
     }
 
 _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
