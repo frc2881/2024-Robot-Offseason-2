@@ -4,10 +4,6 @@ from wpimath import units
 from lib.classes import MotorDirection
 
 class AutoPath(Enum):
-  Test = auto()
-  ScorePreload1 = auto()
-  ScorePreload2 = auto()
-  ScorePreload3 = auto()
   Pickup1 = auto()
   Pickup12 = auto()
   Pickup2 = auto()
@@ -26,6 +22,7 @@ class AutoPath(Enum):
   ScoreStage1 = auto()
   ScoreStage2 = auto()
   ScoreStage3 = auto()
+  Test = auto()
 
 class LightsMode(Enum):
   Default = auto()

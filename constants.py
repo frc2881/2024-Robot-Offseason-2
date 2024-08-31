@@ -40,8 +40,7 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    # TODO: retune auto max velocity and acceleration speeds with updated drivetrain for this chassis
-    kPathFindingConstraints = PathConstraints(4.8, 3.2, units.degreesToRadians(540), units.degreesToRadians(720))
+    kPathFindingConstraints = PathConstraints(5.4, 3.6, units.degreesToRadians(360), units.degreesToRadians(720))
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
     kSwerveModuleFrontLeftTurningMotorCANId: int = 4
@@ -112,9 +111,8 @@ class Subsystems:
     kDistanceLauncherReadyMin: units.millimeters = 1.0
     kDistanceLauncherReadyMax: units.millimeters = 220.0
 
-    # TODO: return note alignment timing/speeds in launcher with updated mechanisms
-    kAlignTimeout: units.seconds = 0.2
-    kReloadTimeout: units.seconds = 0.4
+    kAlignTimeout: units.seconds = 0.1
+    kReloadTimeout: units.seconds = 0.2
 
   class Launcher:
     class Arm:
@@ -122,15 +120,16 @@ class Subsystems:
       kLeftMotorCANId: int = 15
 
       kMotorCurrentLimit: units.amperes = 60
-      kMotorMaxReverseOutput: units.percent = -0.8
       kMotorMaxForwardOutput: units.percent = 0.8
-      kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 16.8)
+      kMotorMaxReverseOutput: units.percent = -0.8
+      # TODO: recalibrate arm movement with correct kV and FF applied per REV documentation
+      kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 565)
       kMotorForwardSoftLimit: float = 22.5
       kMotorReverseSoftLimit: float = 0
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
-      kMotorSmartMotionMaxAccel: float = 50.0 / kMotorVelocityConversionFactor 
+      kMotorSmartMotionMaxAccel: float = 33.0 / kMotorVelocityConversionFactor 
 
       kInputLimit: units.percent = 0.5
       kResetSpeed: units.percent = 0.1
@@ -138,21 +137,21 @@ class Subsystems:
       kTargetAlignmentPositionTolerance: float = 0.05
 
       # TODO: retune the launch position references (distance + elevation) based on mechanical updates to the launcher rollers
-      kPositionSubwoofer: float = 7.5
-      kPositionPodium: float = 4.7
+      kPositionSubwoofer: float = 7.2
+      kPositionPodium: float = 3.2
       kPositionAmp: float = 23.0
       kPositionShuttle: float = 5.0
       kPositionIntake: float = 0.00
 
       kPositionTargets: list[LauncherArmPositionTarget] = [
         LauncherArmPositionTarget(0.00, 8.2),
-        LauncherArmPositionTarget(0.75, 7.9),
+        LauncherArmPositionTarget(0.75, 7.6),
         LauncherArmPositionTarget(1.25, kPositionSubwoofer),
-        LauncherArmPositionTarget(2.50, 5.3),
+        LauncherArmPositionTarget(2.50, 3.8),
         LauncherArmPositionTarget(2.90, kPositionPodium),
-        LauncherArmPositionTarget(3.45, 3.80),
-        LauncherArmPositionTarget(4.00, 3.20),
-        LauncherArmPositionTarget(4.75, 2.30),
+        LauncherArmPositionTarget(3.45, 2.80),
+        LauncherArmPositionTarget(4.00, 2.40),
+        LauncherArmPositionTarget(4.75, 2.20),
         LauncherArmPositionTarget(5.15, 1.85),
         LauncherArmPositionTarget(6.05, 1.60),
         LauncherArmPositionTarget(7.00, 1.40)
@@ -179,7 +178,6 @@ class Sensors:
       kSerialPort = SerialPort.Port.kUSB1
 
   class Pose:
-    # TODO: update transform measurements for all pose sensor cameras
     kPoseSensors: dict[str, Transform3d] = {
       "Rear": Transform3d(
         Translation3d(units.inchesToMeters(6.10), units.inchesToMeters(0.0), units.inchesToMeters(20.59)),
@@ -212,11 +210,9 @@ class Sensors:
 
   class Object:
     class Intake:
-      # TODO: configure object detection camera in PhotonVision instance
       kCameraName = "Intake"
 
   class Camera:
-    # TODO: configuration of all camera stream ports to match coprocessor setup
     kStreams: dict[str, str] = {
       "Rear": "http://10.28.81.6:1182/?action=stream",
       "Front": "http://10.28.81.6:1184/?action=stream",
@@ -246,17 +242,13 @@ class Game:
 
       kSpeakerTargetTransform = Transform3d(
         units.inchesToMeters(6.0),
-        units.inchesToMeters(-6.0),
+        units.inchesToMeters(6.0),
         units.inchesToMeters(24),
         Rotation3d()
       )
 
   class Auto:
     kPaths: dict[AutoPath, PathPlannerPath] = {
-      AutoPath.Test: PathPlannerPath.fromPathFile(AutoPath.Test.name),
-      AutoPath.ScorePreload1: PathPlannerPath.fromPathFile(AutoPath.ScorePreload1.name),
-      AutoPath.ScorePreload2: PathPlannerPath.fromPathFile(AutoPath.ScorePreload2.name),
-      AutoPath.ScorePreload3: PathPlannerPath.fromPathFile(AutoPath.ScorePreload3.name),
       AutoPath.Pickup1: PathPlannerPath.fromPathFile(AutoPath.Pickup1.name),
       AutoPath.Pickup12: PathPlannerPath.fromPathFile(AutoPath.Pickup12.name),
       AutoPath.Pickup2: PathPlannerPath.fromPathFile(AutoPath.Pickup2.name),
@@ -274,7 +266,8 @@ class Game:
       AutoPath.Pickup8: PathPlannerPath.fromPathFile(AutoPath.Pickup8.name),
       AutoPath.ScoreStage1: PathPlannerPath.fromPathFile(AutoPath.ScoreStage1.name),
       AutoPath.ScoreStage2: PathPlannerPath.fromPathFile(AutoPath.ScoreStage2.name),
-      AutoPath.ScoreStage3: PathPlannerPath.fromPathFile(AutoPath.ScoreStage3.name)
+      AutoPath.ScoreStage3: PathPlannerPath.fromPathFile(AutoPath.ScoreStage3.name),
+      AutoPath.Test: PathPlannerPath.fromPathFile(AutoPath.Test.name)
     }
 
     kPickupTimeout: units.seconds = 4.0

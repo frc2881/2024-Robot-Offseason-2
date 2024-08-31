@@ -57,6 +57,7 @@ class LauncherRollersSubsystem(Subsystem):
     return encoder.getVelocity() / (motor.get() * self._constants.kMotorFreeSpeed) if motor.get() != 0 else 0
 
   def isLaunchReady(self) -> bool:
+    # TODO: validate speed telemetry for launch ready timeout
     return self._bottomMotorSpeedDelta >= self._constants.kLaunchSpeedDeltaMin and self._topMotorSpeedDelta >= self._constants.kLaunchSpeedDeltaMin
 
   def reset(self) -> None:
