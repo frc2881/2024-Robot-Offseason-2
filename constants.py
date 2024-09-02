@@ -9,6 +9,7 @@ from extras.pathplannerlib.controller import PIDConstants as PathPlannerPIDConst
 from extras.pathplannerlib.pathfinding import PathConstraints
 from extras.pathplannerlib.path import PathPlannerPath
 from lib.classes import PIDConstants
+from lib.utils import logger
 from classes import AutoPath, LauncherRollersSpeeds, LauncherArmPositionTarget
 
 class Controllers:
@@ -120,11 +121,10 @@ class Subsystems:
       kLeftMotorCANId: int = 15
 
       kMotorCurrentLimit: units.amperes = 60
-      kMotorMaxForwardOutput: units.percent = 0.8
-      kMotorMaxReverseOutput: units.percent = -0.8
-      # TODO: recalibrate arm movement with correct kV and FF applied per REV documentation
+      kMotorMaxForwardOutput: units.percent = 1.0
+      kMotorMaxReverseOutput: units.percent = -1.0
       kMotorPIDConstants = PIDConstants(0.0003, 0, 0.00015, 1 / 565)
-      kMotorForwardSoftLimit: float = 22.5
+      kMotorForwardSoftLimit: float = 22.50
       kMotorReverseSoftLimit: float = 0
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
@@ -136,25 +136,28 @@ class Subsystems:
 
       kTargetAlignmentPositionTolerance: float = 0.05
 
-      # TODO: retune the launch position references (distance + elevation) based on mechanical updates to the launcher rollers
-      kPositionSubwoofer: float = 7.2
-      kPositionPodium: float = 3.2
-      kPositionAmp: float = 22.5
-      kPositionShuttle: float = 5.0
-      kPositionIntake: float = 0.00
+      kPositionIntake: float = 0.05
+      kPositionSubwoofer: float = 6.80
+      kPositionPodium: float = 2.00
+      kPositionAmp: float = 22.50
+      kPositionShuttle: float = 4.00
+      kPositionClimbUp: float = 22.50
+      kPositionClimbDown: float = 4.40
 
       kPositionTargets: list[LauncherArmPositionTarget] = [
-        LauncherArmPositionTarget(0.00, 8.2),
-        LauncherArmPositionTarget(0.75, 7.6),
+        LauncherArmPositionTarget(0.00, 7.20),
+        LauncherArmPositionTarget(0.50, 7.00),
         LauncherArmPositionTarget(1.25, kPositionSubwoofer),
-        LauncherArmPositionTarget(2.50, 3.8),
-        LauncherArmPositionTarget(2.90, kPositionPodium),
-        LauncherArmPositionTarget(3.45, 2.80),
-        LauncherArmPositionTarget(4.00, 2.40),
-        LauncherArmPositionTarget(4.75, 2.20),
-        LauncherArmPositionTarget(5.15, 1.85),
-        LauncherArmPositionTarget(6.05, 1.60),
-        LauncherArmPositionTarget(7.00, 1.40)
+        LauncherArmPositionTarget(2.00, 3.60),
+        LauncherArmPositionTarget(2.50, 2.60),
+        LauncherArmPositionTarget(3.00, kPositionPodium),
+        LauncherArmPositionTarget(3.45, 1.40),
+        LauncherArmPositionTarget(4.00, 0.90),
+        LauncherArmPositionTarget(4.75, 0.70),
+        LauncherArmPositionTarget(5.70, 0.40),
+        LauncherArmPositionTarget(6.00, 0.20),
+        LauncherArmPositionTarget(7.00, 0.10),
+        LauncherArmPositionTarget(8.00, 0.05)
       ]
 
     class Rollers:
@@ -163,14 +166,14 @@ class Subsystems:
 
       kMotorFreeSpeed: units.revolutions_per_minute = 6784
 
-      kMotorCurrentLimit: units.amperes = 100
+      kMotorCurrentLimit: units.amperes = 120
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorMaxReverseOutput: units.percent = -1.0
 
       kSpeedsDefault = LauncherRollersSpeeds(1.0, 1.0)
-      kSpeedsShuttle = LauncherRollersSpeeds(1.0, 1.0)
+      kSpeedsShuttle = LauncherRollersSpeeds(0.6, 0.6)
 
-      kLaunchSpeedDeltaMin: units.percent = 0.95
+      kLaunchSpeedDeltaMin: units.percent = 0.90
 
 class Sensors:
   class Gyro:
@@ -180,19 +183,19 @@ class Sensors:
   class Pose:
     kPoseSensors: dict[str, Transform3d] = {
       "Rear": Transform3d(
-        Translation3d(units.inchesToMeters(6.10), units.inchesToMeters(0.0), units.inchesToMeters(20.59)),
+        Translation3d(units.inchesToMeters(5.50), units.inchesToMeters(0.0), units.inchesToMeters(20.60)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-28.4), units.degreesToRadians(-180.0))
       ),
       "Front": Transform3d(
-        Translation3d(units.inchesToMeters(9.44), units.inchesToMeters(3.75), units.inchesToMeters(21.42)),
+        Translation3d(units.inchesToMeters(8.50), units.inchesToMeters(3.84), units.inchesToMeters(21.25)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-25.8), units.degreesToRadians(0.0))
       ),
       "Left": Transform3d(
-        Translation3d(units.inchesToMeters(8.82), units.inchesToMeters(12.44), units.inchesToMeters(17.32)),
+        Translation3d(units.inchesToMeters(8.25), units.inchesToMeters(12.40), units.inchesToMeters(17.25)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-29.1), units.degreesToRadians(90.0))
       ),
       "Right": Transform3d(
-        Translation3d(units.inchesToMeters(8.82), units.inchesToMeters(-12.56), units.inchesToMeters(17.13)),
+        Translation3d(units.inchesToMeters(8.25), units.inchesToMeters(-12.30), units.inchesToMeters(17.25)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-22.0), units.degreesToRadians(-90.0))
       )
     }
@@ -211,8 +214,6 @@ class Sensors:
   class Object:
     class Intake:
       kCameraName = "Intake"
-      # TODO: tune target yaw offset based on object detection camera delta from center of robot
-      kTargetYawOffset: units.degrees = 5.0
 
   class Camera:
     kStreams: dict[str, str] = {
@@ -220,15 +221,15 @@ class Sensors:
       "Front": "http://10.28.81.6:1184/?action=stream",
       "Left": "http://10.28.81.7:1182/?action=stream",
       "Right": "http://10.28.81.7:1184/?action=stream",
-      "Driver": "http://10.28.81.7:1186/?action=stream"
+      "Driver": "http://10.28.81.6:1188/?action=stream"
     }
 
 _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
 
 class Game:
   class Commands:
-    kScoringAlignmentTimeout: units.seconds = 1.2
-    kScoringLaunchTimeout: units.seconds = 1.35
+    kScoringAlignmentTimeout: units.seconds = 0.75
+    kScoringLaunchTimeout: units.seconds = 1.0
 
   class Field:
     kAprilTagFieldLayout = _aprilTagFieldLayout
@@ -244,7 +245,7 @@ class Game:
 
       kSpeakerTargetTransform = Transform3d(
         units.inchesToMeters(6.0),
-        units.inchesToMeters(6.0),
+        units.inchesToMeters(12.0),
         units.inchesToMeters(24),
         Rotation3d()
       )

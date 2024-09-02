@@ -52,10 +52,7 @@ class RobotContainer:
       constants.Sensors.Distance.Launcher.kMinTargetDistance,
       constants.Sensors.Distance.Launcher.kMaxTargetDistance
     )
-    self.intakeObjectSensor = ObjectSensor(
-      constants.Sensors.Object.Intake.kCameraName,
-      constants.Sensors.Object.Intake.kTargetYawOffset
-    )
+    self.intakeObjectSensor = ObjectSensor(constants.Sensors.Object.Intake.kCameraName)
     
   def _initSubsystems(self) -> None:
     self.driveSubsystem = DriveSubsystem(
@@ -123,8 +120,11 @@ class RobotContainer:
     self.driverController.a().whileTrue(self.gameCommands.alignLauncherToAmpCommand())
     self.driverController.b().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionSubwoofer))
     self.driverController.y().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionPodium))
-    # TODO: add command for climbing sequence with launcher arm
-    # self.driverController.x().whileTrue(cmd.none())
+    self.driverController.x().whileTrue(
+      self.launcherArmSubsystem.alignToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionClimbUp)
+    ).onFalse(
+      self.launcherArmSubsystem.alignToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionClimbDown)
+    )
     self.driverController.start().onTrue(self.gyroSensor.calibrateCommand())
     self.driverController.back().onTrue(self.gyroSensor.resetCommand())
 
