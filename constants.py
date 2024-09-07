@@ -138,7 +138,7 @@ class Subsystems:
 
       kPositionIntake: float = 0.05
       kPositionSubwoofer: float = 6.80
-      kPositionPodium: float = 2.00
+      kPositionPodium: float = 1.90
       kPositionAmp: float = 22.50
       kPositionShuttle: float = 4.00
       kPositionClimbUp: float = 22.50
@@ -148,8 +148,8 @@ class Subsystems:
         LauncherArmPositionTarget(0.00, 7.20),
         LauncherArmPositionTarget(0.50, 7.00),
         LauncherArmPositionTarget(1.25, kPositionSubwoofer),
-        LauncherArmPositionTarget(2.00, 3.60),
-        LauncherArmPositionTarget(2.50, 2.60),
+        LauncherArmPositionTarget(2.00, 3.50),
+        LauncherArmPositionTarget(2.50, 2.50),
         LauncherArmPositionTarget(3.00, kPositionPodium),
         LauncherArmPositionTarget(3.45, 1.40),
         LauncherArmPositionTarget(4.00, 0.90),
@@ -183,20 +183,20 @@ class Sensors:
   class Pose:
     kPoseSensors: dict[str, Transform3d] = {
       "Rear": Transform3d(
-        Translation3d(units.inchesToMeters(5.50), units.inchesToMeters(0.0), units.inchesToMeters(20.60)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-28.4), units.degreesToRadians(-180.0))
+        Translation3d(units.inchesToMeters(5.49), units.inchesToMeters(0.0), units.inchesToMeters(20.60)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.2), units.degreesToRadians(-180.0))
       ),
       "Front": Transform3d(
-        Translation3d(units.inchesToMeters(8.50), units.inchesToMeters(3.84), units.inchesToMeters(21.25)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-25.8), units.degreesToRadians(0.0))
+        Translation3d(units.inchesToMeters(9.62), units.inchesToMeters(4.12), units.inchesToMeters(21.25)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-22.3), units.degreesToRadians(0.0))
       ),
       "Left": Transform3d(
-        Translation3d(units.inchesToMeters(8.25), units.inchesToMeters(12.40), units.inchesToMeters(17.25)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-29.1), units.degreesToRadians(90.0))
+        Translation3d(units.inchesToMeters(8.24), units.inchesToMeters(12.40), units.inchesToMeters(17.25)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-29.4), units.degreesToRadians(90.0))
       ),
       "Right": Transform3d(
-        Translation3d(units.inchesToMeters(8.25), units.inchesToMeters(-12.30), units.inchesToMeters(17.25)),
-        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-22.0), units.degreesToRadians(-90.0))
+        Translation3d(units.inchesToMeters(8.16), units.inchesToMeters(-12.375), units.inchesToMeters(17.25)),
+        Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-21.2), units.degreesToRadians(-90.0))
       )
     }
     kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
