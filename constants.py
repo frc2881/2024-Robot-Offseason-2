@@ -41,7 +41,7 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    kPathFindingConstraints = PathConstraints(5.4, 3.6, units.degreesToRadians(360), units.degreesToRadians(720))
+    kPathFindingConstraints = PathConstraints(5.8, 4.6, units.degreesToRadians(360), units.degreesToRadians(720))
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
     kSwerveModuleFrontLeftTurningMotorCANId: int = 4
@@ -106,7 +106,7 @@ class Subsystems:
     kSpeedAlign: units.percent = 0.1
     kSpeedEject: units.percent = 0.3
     kSpeedLaunch: units.percent = 1.0
-    kSpeedScoreAmp: units.percent = 0.3
+    kSpeedScoreAmp: units.percent = 0.5
 
     kDistanceIntake: units.millimeters = 40.0
     kDistanceLauncherReadyMin: units.millimeters = 1.0
@@ -129,7 +129,7 @@ class Subsystems:
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
-      kMotorSmartMotionMaxAccel: float = 33.0 / kMotorVelocityConversionFactor 
+      kMotorSmartMotionMaxAccel: float = 66.0 / kMotorVelocityConversionFactor 
 
       kInputLimit: units.percent = 0.5
       kResetSpeed: units.percent = 0.1
@@ -137,8 +137,8 @@ class Subsystems:
       kTargetAlignmentPositionTolerance: float = 0.05
 
       kPositionIntake: float = 0.05
-      kPositionSubwoofer: float = 6.80
-      kPositionPodium: float = 1.90
+      kPositionSubwoofer: float = 6.90
+      kPositionPodium: float = 2.30
       kPositionAmp: float = 22.50
       kPositionShuttle: float = 4.00
       kPositionClimbUp: float = 22.50
@@ -148,15 +148,15 @@ class Subsystems:
         LauncherArmPositionTarget(0.00, 7.20),
         LauncherArmPositionTarget(0.50, 7.00),
         LauncherArmPositionTarget(1.25, kPositionSubwoofer),
-        LauncherArmPositionTarget(2.00, 3.50),
-        LauncherArmPositionTarget(2.50, 2.50),
+        LauncherArmPositionTarget(2.00, 3.90),
+        LauncherArmPositionTarget(2.50, 2.80),
         LauncherArmPositionTarget(3.00, kPositionPodium),
-        LauncherArmPositionTarget(3.45, 1.40),
-        LauncherArmPositionTarget(4.00, 0.90),
-        LauncherArmPositionTarget(4.75, 0.70),
-        LauncherArmPositionTarget(5.70, 0.40),
-        LauncherArmPositionTarget(6.00, 0.20),
-        LauncherArmPositionTarget(7.00, 0.10),
+        LauncherArmPositionTarget(3.45, 1.90),
+        LauncherArmPositionTarget(4.00, 1.40),
+        LauncherArmPositionTarget(4.75, 1.00),
+        LauncherArmPositionTarget(5.70, 0.80),
+        LauncherArmPositionTarget(6.00, 0.50),
+        LauncherArmPositionTarget(7.00, 0.30),
         LauncherArmPositionTarget(8.00, 0.05)
       ]
 
@@ -171,7 +171,7 @@ class Subsystems:
       kMotorMaxReverseOutput: units.percent = -1.0
 
       kSpeedsDefault = LauncherRollersSpeeds(1.0, 1.0)
-      kSpeedsShuttle = LauncherRollersSpeeds(0.6, 0.6)
+      kSpeedsShuttle = LauncherRollersSpeeds(0.65, 0.65)
 
       kLaunchSpeedDeltaMin: units.percent = 0.90
 
@@ -219,7 +219,7 @@ class Sensors:
     kStreams: dict[str, str] = {
       "Rear": "http://10.28.81.6:1182/?action=stream",
       "Front": "http://10.28.81.6:1184/?action=stream",
-      "Left": "http://10.28.81.7:1182/?action=stream",
+      "Left": "http://10.28.81.7:1186/?action=stream",
       "Right": "http://10.28.81.7:1184/?action=stream",
       "Driver": "http://10.28.81.6:1188/?action=stream"
     }
@@ -228,7 +228,7 @@ _aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Cresce
 
 class Game:
   class Commands:
-    kScoringAlignmentTimeout: units.seconds = 0.75
+    kScoringAlignmentTimeout: units.seconds = 0.8
     kScoringLaunchTimeout: units.seconds = 1.0
 
   class Field:
@@ -260,6 +260,7 @@ class Game:
       AutoPath.Pickup3: PathPlannerPath.fromPathFile(AutoPath.Pickup3.name),
       AutoPath.Pickup32: PathPlannerPath.fromPathFile(AutoPath.Pickup32.name),
       AutoPath.Pickup4: PathPlannerPath.fromPathFile(AutoPath.Pickup4.name),
+      AutoPath.Pickup41: PathPlannerPath.fromPathFile(AutoPath.Pickup41.name),
       AutoPath.Pickup5: PathPlannerPath.fromPathFile(AutoPath.Pickup5.name),
       AutoPath.Pickup61: PathPlannerPath.fromPathFile(AutoPath.Pickup61.name),
       AutoPath.Pickup62: PathPlannerPath.fromPathFile(AutoPath.Pickup62.name),

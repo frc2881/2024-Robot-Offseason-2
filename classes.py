@@ -12,6 +12,7 @@ class AutoPath(Enum):
   Pickup3 = auto()
   Pickup32 = auto()
   Pickup4 = auto()
+  Pickup41 = auto()
   Pickup5 = auto()
   Pickup61 = auto()
   Pickup62 = auto()

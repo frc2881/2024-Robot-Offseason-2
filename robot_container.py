@@ -190,6 +190,7 @@ class RobotContainer:
     self._autoChooser.addOption("[ 1 ] 0_1_51_41", lambda: self.autoCommands.auto1_0_1_51_41())
     self._autoChooser.addOption("[ 1 ] 0_1_51_61", lambda: self.autoCommands.auto1_0_1_51_61())
     self._autoChooser.addOption("[ 1 ] 0_1_51_62", lambda: self.autoCommands.auto1_0_1_51_62())
+    self._autoChooser.addOption("[ 1 ] 0_51_62_72", lambda: self.autoCommands.auto1_0_51_62_72())
 
     self._autoChooser.addOption("[ 2 ] 0", lambda: self.autoCommands.auto0())
     self._autoChooser.addOption("[ 2 ] 0_2", lambda: self.autoCommands.auto2_0_2()) 
@@ -204,10 +205,6 @@ class RobotContainer:
 
     self._autoChooser.addOption("[ 3 ] 0", lambda: self.autoCommands.auto0())
     self._autoChooser.addOption("[ 3 ] 0_3", lambda: self.autoCommands.auto3_0_3())
-    self._autoChooser.addOption("[ 3 ] 0_73", lambda: self.autoCommands.auto3_0_73())
-    self._autoChooser.addOption("[ 3 ] 0_83", lambda: self.autoCommands.auto3_0_83())
-    self._autoChooser.addOption("[ 3 ] 0_73_83", lambda: self.autoCommands.auto3_0_73_83())
-    self._autoChooser.addOption("[ 3 ] 0_83_73", lambda: self.autoCommands.auto3_0_83_73())
     self._autoChooser.addOption("[ 3 ] 0_3_2_1", lambda: self.autoCommands.auto3_0_3_2_1())
     self._autoChooser.addOption("[ 3 ] 0_3_2_1_41", lambda: self.autoCommands.auto3_0_3_2_1_41()) 
     self._autoChooser.addOption("[ 3 ] 0_3_2_1_51", lambda: self.autoCommands.auto3_0_3_2_1_51()) 
@@ -224,7 +221,12 @@ class RobotContainer:
     self._autoChooser.addOption("[ 3 ] 0_3_82_72", lambda: self.autoCommands.auto3_0_3_82_72()) 
     self._autoChooser.addOption("[ 3 ] 0_3_83_62", lambda: self.autoCommands.auto3_0_3_83_62()) 
     self._autoChooser.addOption("[ 3 ] 0_3_83_72", lambda: self.autoCommands.auto3_0_3_83_72()) 
-    self._autoChooser.addOption("[ 3 ] 0_3_83_73", lambda: self.autoCommands.auto3_0_3_83_73()) 
+    self._autoChooser.addOption("[ 3 ] 0_3_83_73", lambda: self.autoCommands.auto3_0_3_83_73())
+    self._autoChooser.addOption("[ 3 ] 0_73", lambda: self.autoCommands.auto3_0_73())
+    self._autoChooser.addOption("[ 3 ] 0_83", lambda: self.autoCommands.auto3_0_83())
+    self._autoChooser.addOption("[ 3 ] 0_73_83", lambda: self.autoCommands.auto3_0_73_83())
+    self._autoChooser.addOption("[ 3 ] 0_83_73", lambda: self.autoCommands.auto3_0_83_73())
+    self._autoChooser.addOption("[ 3 ] 0_83_72_62", lambda: self.autoCommands.auto3_0_83_72_62()) 
 
     self._autoChooser.addOption("[ Test ]", lambda: self.autoCommands.test())
 
