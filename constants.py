@@ -41,7 +41,7 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    kPathFindingConstraints = PathConstraints(5.8, 4.6, units.degreesToRadians(360), units.degreesToRadians(720))
+    kPathFindingConstraints = PathConstraints(2.4, 1.8, units.degreesToRadians(360), units.degreesToRadians(720))
 
     kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
     kSwerveModuleFrontLeftTurningMotorCANId: int = 4
