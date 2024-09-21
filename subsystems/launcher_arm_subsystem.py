@@ -69,8 +69,7 @@ class LauncherArmSubsystem(Subsystem):
   def runCommand(self, getInput: Callable[[], units.percent]) -> Command:
     return self.run(
       lambda: [
-        self._armLeftMotor.set(getInput() * self._constants.kInputLimit),
-        # self._armRightMotor.set(getInput() * self._constants.kInputLimit)
+        self._armLeftMotor.set(getInput() * self._constants.kInputLimit)
       ]
     ).beforeStarting(
       lambda: self.clearTargetAlignment()
@@ -82,7 +81,6 @@ class LauncherArmSubsystem(Subsystem):
     return self.run(
       lambda: [
         self._armLeftPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
-        # self._armRightPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
         self._setIsAlignedToTarget(position)
       ]
     ).beforeStarting(
@@ -96,7 +94,6 @@ class LauncherArmSubsystem(Subsystem):
       lambda: [
         position := self._getTargetPosition(getTargetDistance()),
         self._armLeftPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
-        # self._armRightPIDController.setReference(position, CANSparkBase.ControlType.kSmartMotion),
         self._setIsAlignedToTarget(position)
       ]
     ).beforeStarting(
@@ -107,7 +104,6 @@ class LauncherArmSubsystem(Subsystem):
 
   def _alignToIntake(self) -> Command:
     self._armLeftPIDController.setReference(self._constants.kPositionIntake, CANSparkBase.ControlType.kSmartMotion),
-    # self._armRightPIDController.setReference(self._constants.kPositionIntake, CANSparkBase.ControlType.kSmartMotion),
     self.clearTargetAlignment()
 
   def _getTargetPosition(self, targetDistance: units.meters) -> float:
@@ -130,17 +126,17 @@ class LauncherArmSubsystem(Subsystem):
     return self.startEnd(
       lambda: [
         utils.enableSoftLimits(self._armLeftMotor, False),
-        # utils.enableSoftLimits(self._armRightMotor, False),
+        utils.enableSoftLimits(self._armRightMotor, False),
         self._armLeftMotor.set(-self._constants.kResetSpeed),
-        # self._armRightMotor.set(-self._constants.kResetSpeed)
+        self._armRightMotor.set(-self._constants.kResetSpeed)
       ],
       lambda: [
         self._armLeftEncoder.setPosition(0),
         self._armRightEncoder.setPosition(0),
         self._armLeftMotor.set(0),
-        # self._armRightMotor.set(0),
+        self._armRightMotor.set(0),
         utils.enableSoftLimits(self._armLeftMotor, True),
-        # utils.enableSoftLimits(self._armRightMotor, True),
+        utils.enableSoftLimits(self._armRightMotor, True),
         setattr(self, "_hasInitialZeroReset", True)
       ]
     ).withName("LauncherArmSubsystem:ResetToZero")
@@ -150,7 +146,7 @@ class LauncherArmSubsystem(Subsystem):
 
   def reset(self) -> None:
     self._armLeftMotor.set(0)
-    # self._armRightMotor.set(0)
+    self._armRightMotor.set(0)
     self.clearTargetAlignment()
 
   def _updateTelemetry(self) -> None:
