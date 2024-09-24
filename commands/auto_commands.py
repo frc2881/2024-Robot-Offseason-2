@@ -3,9 +3,9 @@ from typing import TYPE_CHECKING
 from commands2 import Command, cmd
 from wpimath import units
 
-from extras.pathplannerlib.auto import AutoBuilder
-from extras.pathplannerlib.path import PathPlannerPath
-from extras.pathplannerlib.pathfinding import PathConstraints
+from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.path import PathPlannerPath
+from pathplannerlib.pathfinding import PathConstraints
 
 if TYPE_CHECKING: from commands.game_commands import GameCommands
 import constants

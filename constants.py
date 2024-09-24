@@ -5,9 +5,9 @@ from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath import units
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 from photonlibpy.photonPoseEstimator import PoseStrategy
-from extras.pathplannerlib.controller import PIDConstants as PathPlannerPIDConstants
-from extras.pathplannerlib.pathfinding import PathConstraints
-from extras.pathplannerlib.path import PathPlannerPath
+from pathplannerlib.controller import PIDConstants as PathPlannerPIDConstants
+from pathplannerlib.pathfinding import PathConstraints
+from pathplannerlib.path import PathPlannerPath
 from lib.classes import PIDConstants
 from lib.utils import logger
 from classes import AutoPath, LauncherRollersSpeeds, LauncherArmPositionTarget

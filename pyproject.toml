@@ -3,6 +3,7 @@ robotpy_version = "2024.3.2.2"
 robotpy_extras = [
   "commands2",
   "navx",
+  "pathplannerlib",
   "rev",
   "sim"
 ]

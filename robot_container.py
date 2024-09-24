@@ -4,7 +4,7 @@ import constants
 from classes import LightsMode
 from commands.auto_commands import AutoCommands
 from commands.game_commands import GameCommands
-from extras.pathplannerlib.auto import AutoBuilder, HolonomicPathFollowerConfig, ReplanningConfig
+from pathplannerlib.auto import AutoBuilder, HolonomicPathFollowerConfig, ReplanningConfig
 from lib import logger, utils
 from lib.classes import Alliance, RobotState
 from lib.controllers.game_controller import GameController
