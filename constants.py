@@ -7,15 +7,8 @@ from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 from photonlibpy.photonPoseEstimator import PoseStrategy
 from pathplannerlib.controller import PIDConstants as PathPlannerPIDConstants
 from pathplannerlib.pathfinding import PathConstraints
-from pathplannerlib.path import PathPlannerPath
-from lib.classes import PIDConstants
-from lib.utils import logger
-from classes import AutoPath, LauncherRollersSpeeds, LauncherArmPositionTarget
-
-class Controllers:
-  kDriverControllerPort: int = 0
-  kOperatorControllerPort: int = 1
-  kInputDeadband: units.percent = 0.1
+from lib.classes import PIDConstants, MotorControllerType, ChassisLocation, SwerveModuleConfig
+from classes import LauncherRollersSpeeds, LauncherArmPositionTarget
 
 class Subsystems:
   class Drive:
@@ -24,7 +17,7 @@ class Subsystems:
     kDriveBaseRadius: units.meters = Translation2d().distance(Translation2d(kWheelBase / 2, kTrackWidth / 2))
 
     kTranslationSpeedMax: units.meters_per_second = 6.32
-    kRotationSpeedMax: units.radians_per_second = 4 * math.pi
+    kRotationSpeedMax: units.radians_per_second = 4 * math.pi # type: ignore
 
     kInputLimit: units.percent = 0.6
     kInputRateLimit: units.percent = 0.5
@@ -41,41 +34,30 @@ class Subsystems:
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    kPathFindingConstraints = PathConstraints(2.4, 1.8, units.degreesToRadians(360), units.degreesToRadians(720))
+    kPathFindingConstraints = PathConstraints(4.2, 3.6, units.degreesToRadians(360), units.degreesToRadians(720))
 
-    kSwerveModuleFrontLeftDrivingMotorCANId: int = 3
-    kSwerveModuleFrontLeftTurningMotorCANId: int = 4
-    kSwerveModuleFrontRightDrivingMotorCANId: int = 7 
-    kSwerveModuleFrontRightTurningMotorCANId: int = 8 
-    kSwerveModuleRearLeftDrivingMotorCANId: int = 5 
-    kSwerveModuleRearLeftTurningMotorCANId: int = 6 
-    kSwerveModuleRearRightDrivingMotorCANId: int = 9 
-    kSwerveModuleRearRightTurningMotorCANId: int = 10 
-
-    kSwerveModuleFrontLeftTurningOffset: units.radians = -math.pi / 2
-    kSwerveModuleFrontRightTurningOffset: units.radians = 0
-    kSwerveModuleRearLeftTurningOffset: units.radians = math.pi
-    kSwerveModuleRearRightTurningOffset: units.radians = math.pi / 2
-
-    kSwerveModuleFrontLeftTranslation = Translation2d(kWheelBase / 2, kTrackWidth / 2)
-    kSwerveModuleFrontRightTranslation = Translation2d(kWheelBase / 2, -kTrackWidth / 2)
-    kSwerveModuleRearLeftTranslation = Translation2d(-kWheelBase / 2, kTrackWidth / 2)
-    kSwerveModuleRearRightTranslation = Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
+    kSwerveModules = (
+      SwerveModuleConfig(ChassisLocation.FrontLeft, 3, 4, -math.pi / 2, Translation2d(kWheelBase / 2, kTrackWidth / 2)),
+      SwerveModuleConfig(ChassisLocation.FrontRight, 7, 8, 0, Translation2d(kWheelBase / 2, -kTrackWidth / 2)),
+      SwerveModuleConfig(ChassisLocation.RearLeft, 5, 6, math.pi, Translation2d(-kWheelBase / 2, kTrackWidth / 2)),
+      SwerveModuleConfig(ChassisLocation.RearRight, 9, 10, math.pi / 2, Translation2d(-kWheelBase / 2, -kTrackWidth / 2))
+    )
 
     kSwerveDriveKinematics = SwerveDrive4Kinematics(
-      kSwerveModuleFrontLeftTranslation, 
-      kSwerveModuleFrontRightTranslation, 
-      kSwerveModuleRearLeftTranslation, 
-      kSwerveModuleRearRightTranslation
+      kSwerveModules[0].translation,
+      kSwerveModules[1].translation, 
+      kSwerveModules[2].translation,
+      kSwerveModules[3].translation
     )
 
     class SwerveModule:
-      kFreeSpeed: units.revolutions_per_minute = 6784
       kWheelDiameter: units.meters = units.inchesToMeters(3.0)
       kWheelCircumference: units.meters = kWheelDiameter * math.pi
+      kDrivingMotorControllerType = MotorControllerType.SparkFlex
+      kDrivingMotorFreeSpeed: units.revolutions_per_minute = 6784
       kDrivingMotorPinionTeeth: int = 14
       kDrivingMotorReduction: float = (45.0 * 20) / (kDrivingMotorPinionTeeth * 15)
-      kDrivingMotorFreeSpeedRps: float = kFreeSpeed / 60
+      kDrivingMotorFreeSpeedRps: float = kDrivingMotorFreeSpeed / 60
       kDriveWheelFreeSpeedRps: float = (kDrivingMotorFreeSpeedRps * kWheelCircumference) / kDrivingMotorReduction 
       kDrivingEncoderPositionConversionFactor: float = (kWheelDiameter * math.pi) / kDrivingMotorReduction
       kDrivingEncoderVelocityConversionFactor: float = ((kWheelDiameter * math.pi) / kDrivingMotorReduction) / 60.0
@@ -165,7 +147,6 @@ class Subsystems:
       kTopMotorCANId: int = 17
 
       kMotorFreeSpeed: units.revolutions_per_minute = 6784
-
       kMotorCurrentLimit: units.amperes = 120
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorMaxReverseOutput: units.percent = -1.0
@@ -181,20 +162,20 @@ class Sensors:
       kSerialPort = SerialPort.Port.kUSB1
 
   class Pose:
-    kPoseSensors: dict[str, Transform3d] = {
-      "Rear": Transform3d(
+    kPoseSensors: dict[ChassisLocation, Transform3d] = {
+      ChassisLocation.Rear: Transform3d(
         Translation3d(units.inchesToMeters(5.49), units.inchesToMeters(0.0), units.inchesToMeters(20.60)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.2), units.degreesToRadians(-180.0))
       ),
-      "Front": Transform3d(
+      ChassisLocation.Front: Transform3d(
         Translation3d(units.inchesToMeters(9.62), units.inchesToMeters(4.12), units.inchesToMeters(21.25)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-22.3), units.degreesToRadians(0.0))
       ),
-      "Left": Transform3d(
+      ChassisLocation.Left: Transform3d(
         Translation3d(units.inchesToMeters(8.24), units.inchesToMeters(12.40), units.inchesToMeters(17.25)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-29.4), units.degreesToRadians(90.0))
       ),
-      "Right": Transform3d(
+      ChassisLocation.Right: Transform3d(
         Translation3d(units.inchesToMeters(8.16), units.inchesToMeters(-12.375), units.inchesToMeters(17.25)),
         Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-21.2), units.degreesToRadians(-90.0))
       )
@@ -224,54 +205,32 @@ class Sensors:
       "Driver": "http://10.28.81.6:1188/?action=stream"
     }
 
-_aprilTagFieldLayout = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
+class Controllers:
+  kDriverControllerPort: int = 0
+  kOperatorControllerPort: int = 1
+  kInputDeadband: units.percent = 0.1
+
+APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
 
 class Game:
   class Commands:
     kScoringAlignmentTimeout: units.seconds = 0.8
     kScoringLaunchTimeout: units.seconds = 1.0
+    kAutoPickupTimeout: units.seconds = 4.0
 
   class Field:
-    kAprilTagFieldLayout = _aprilTagFieldLayout
-    kLength = kAprilTagFieldLayout.getFieldLength()
-    kWidth = kAprilTagFieldLayout.getFieldWidth()
+    kAprilTagFieldLayout = APRIL_TAG_FIELD_LAYOUT
+    kLength = APRIL_TAG_FIELD_LAYOUT.getFieldLength()
+    kWidth = APRIL_TAG_FIELD_LAYOUT.getFieldWidth()
     kBounds = (Translation2d(0, 0), Translation2d(kLength, kWidth))
 
     class Targets:  
-      kBlueSpeaker = _aprilTagFieldLayout.getTagPose(7) or Pose3d()
-      kRedSpeaker = _aprilTagFieldLayout.getTagPose(4) or Pose3d()
-      kBlueAmp = _aprilTagFieldLayout.getTagPose(5) or Pose3d()
-      kRedAmp = _aprilTagFieldLayout.getTagPose(6) or Pose3d()
+      kBlueTarget = APRIL_TAG_FIELD_LAYOUT.getTagPose(7) or Pose3d()
+      kRedTarget = APRIL_TAG_FIELD_LAYOUT.getTagPose(4) or Pose3d()
 
-      kSpeakerTargetTransform = Transform3d(
+      kTargetTransform = Transform3d(
         units.inchesToMeters(6.0),
         units.inchesToMeters(12.0),
         units.inchesToMeters(24),
         Rotation3d()
       )
-
-  class Auto:
-    kPaths: dict[AutoPath, PathPlannerPath] = {
-      AutoPath.Pickup1: PathPlannerPath.fromPathFile(AutoPath.Pickup1.name),
-      AutoPath.Pickup12: PathPlannerPath.fromPathFile(AutoPath.Pickup12.name),
-      AutoPath.Pickup2: PathPlannerPath.fromPathFile(AutoPath.Pickup2.name),
-      AutoPath.Pickup21: PathPlannerPath.fromPathFile(AutoPath.Pickup21.name),
-      AutoPath.Pickup23: PathPlannerPath.fromPathFile(AutoPath.Pickup23.name),
-      AutoPath.Pickup3: PathPlannerPath.fromPathFile(AutoPath.Pickup3.name),
-      AutoPath.Pickup32: PathPlannerPath.fromPathFile(AutoPath.Pickup32.name),
-      AutoPath.Pickup4: PathPlannerPath.fromPathFile(AutoPath.Pickup4.name),
-      AutoPath.Pickup41: PathPlannerPath.fromPathFile(AutoPath.Pickup41.name),
-      AutoPath.Pickup5: PathPlannerPath.fromPathFile(AutoPath.Pickup5.name),
-      AutoPath.Pickup61: PathPlannerPath.fromPathFile(AutoPath.Pickup61.name),
-      AutoPath.Pickup62: PathPlannerPath.fromPathFile(AutoPath.Pickup62.name),
-      AutoPath.Pickup63: PathPlannerPath.fromPathFile(AutoPath.Pickup63.name),
-      AutoPath.Pickup72: PathPlannerPath.fromPathFile(AutoPath.Pickup72.name),
-      AutoPath.Pickup73: PathPlannerPath.fromPathFile(AutoPath.Pickup73.name),
-      AutoPath.Pickup8: PathPlannerPath.fromPathFile(AutoPath.Pickup8.name),
-      AutoPath.ScoreStage1: PathPlannerPath.fromPathFile(AutoPath.ScoreStage1.name),
-      AutoPath.ScoreStage2: PathPlannerPath.fromPathFile(AutoPath.ScoreStage2.name),
-      AutoPath.ScoreStage3: PathPlannerPath.fromPathFile(AutoPath.ScoreStage3.name),
-      AutoPath.Test: PathPlannerPath.fromPathFile(AutoPath.Test.name)
-    }
-
-    kPickupTimeout: units.seconds = 4.0

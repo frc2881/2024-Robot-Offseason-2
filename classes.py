@@ -1,7 +1,6 @@
 from enum import Enum, auto
 from dataclasses import dataclass
 from wpimath import units
-from lib.classes import MotorDirection
 
 class AutoPath(Enum):
   Pickup1 = auto()
@@ -20,10 +19,9 @@ class AutoPath(Enum):
   Pickup72 = auto()
   Pickup73 = auto()
   Pickup8 = auto()
-  ScoreStage1 = auto()
-  ScoreStage2 = auto()
-  ScoreStage3 = auto()
-  Test = auto()
+  Score1 = auto()
+  Score2 = auto()
+  Score3 = auto()
 
 class LightsMode(Enum):
   Default = auto()

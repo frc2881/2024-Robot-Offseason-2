@@ -89,10 +89,10 @@ class LocalizationSubsystem(Subsystem):
     if utils.getAlliance() != self._currentAlliance:
       self._currentAlliance = utils.getAlliance()
       self._targetPose = utils.getValueForAlliance(
-        constants.Game.Field.Targets.kBlueSpeaker, 
-        constants.Game.Field.Targets.kRedSpeaker
+        constants.Game.Field.Targets.kBlueTarget, 
+        constants.Game.Field.Targets.kRedTarget
       ).transformBy(
-        constants.Game.Field.Targets.kSpeakerTargetTransform
+        constants.Game.Field.Targets.kTargetTransform
       )
 
   def _updateTargetInfo(self) -> None:

@@ -1,9 +1,5 @@
 from commands2 import Command, cmd
 from wpilib import DriverStation, SendableChooser, SmartDashboard
-import constants
-from classes import LightsMode
-from commands.auto_commands import AutoCommands
-from commands.game_commands import GameCommands
 from pathplannerlib.auto import AutoBuilder, HolonomicPathFollowerConfig, ReplanningConfig
 from lib import logger, utils
 from lib.classes import Alliance, RobotState
@@ -13,35 +9,33 @@ from lib.sensors.distance_sensor import DistanceSensor
 from lib.sensors.gyro_sensor_navx2 import GyroSensor_NAVX2
 from lib.sensors.object_sensor import ObjectSensor
 from lib.sensors.pose_sensor import PoseSensor
+from commands.auto_commands import AutoCommands
+from commands.game_commands import GameCommands
 from subsystems.drive_subsystem import DriveSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.launcher_arm_subsystem import LauncherArmSubsystem
 from subsystems.launcher_rollers_subsystem import LauncherRollersSubsystem
 from subsystems.localization_subsystem import LocalizationSubsystem
-
+from classes import LightsMode
+import constants
 
 class RobotContainer:
   def __init__(self) -> None:
-    self._initSensors()
-    self._initSubsystems()
-    self._initControllers()
-    self._initCommands()
-    self._setupControllers()
+    self._setupSensors()
+    self._setupSubsystems()
+    self._setupCommands()
     self._setupTriggers()
-    self._setupAutos()
+    self._setupControllers()
+    self._setupLights()
+    utils.addRobotPeriodic(lambda: self._updateTelemetry())
 
-    utils.addRobotPeriodic(lambda: [ 
-      self._updateLights(),
-      self._updateTelemetry()
-    ])
-
-  def _initSensors(self) -> None:
+  def _setupSensors(self) -> None:
     self.gyroSensor = GyroSensor_NAVX2(constants.Sensors.Gyro.NAVX2.kSerialPort)
     self.poseSensors: list[PoseSensor] = []
-    for cameraName, cameraTransform in constants.Sensors.Pose.kPoseSensors.items():
+    for location, transform in constants.Sensors.Pose.kPoseSensors.items():
       self.poseSensors.append(PoseSensor(
-        cameraName,
-        cameraTransform,
+        location.name,
+        transform,
         constants.Sensors.Pose.kPoseStrategy,
         constants.Sensors.Pose.kFallbackPoseStrategy,
         constants.Game.Field.kAprilTagFieldLayout
@@ -54,7 +48,7 @@ class RobotContainer:
     )
     self.intakeObjectSensor = ObjectSensor(constants.Sensors.Object.Intake.kCameraName)
     
-  def _initSubsystems(self) -> None:
+  def _setupSubsystems(self) -> None:
     self.driveSubsystem = DriveSubsystem(
       lambda: self.gyroSensor.getHeading()
     )
@@ -63,6 +57,21 @@ class RobotContainer:
       lambda: self.gyroSensor.getRotation(),
       lambda: self.driveSubsystem.getSwerveModulePositions()
     )
+    AutoBuilder.configureHolonomic(
+      lambda: self.localizationSubsystem.getPose(), 
+      lambda pose: self.localizationSubsystem.resetPose(pose), 
+      lambda: self.driveSubsystem.getSpeeds(), 
+      lambda chassisSpeeds: self.driveSubsystem.drive(chassisSpeeds), 
+      HolonomicPathFollowerConfig(
+        constants.Subsystems.Drive.kPathFollowerTranslationPIDConstants,
+        constants.Subsystems.Drive.kPathFollowerRotationPIDConstants,
+        constants.Subsystems.Drive.kTranslationSpeedMax, 
+        constants.Subsystems.Drive.kDriveBaseRadius, 
+        ReplanningConfig()
+      ),
+      lambda: utils.getAlliance() == Alliance.Red,
+      self.driveSubsystem
+    )
     self.intakeSubsystem = IntakeSubsystem(
       lambda: self.launcherDistanceSensor.hasTarget(),
       lambda: self.launcherDistanceSensor.getDistance()
@@ -70,8 +79,19 @@ class RobotContainer:
     self.launcherArmSubsystem = LauncherArmSubsystem()
     self.launcherRollersSubsystem = LauncherRollersSubsystem()
     
-  def _initControllers(self) -> None:
-    DriverStation.silenceJoystickConnectionWarning(True)
+  def _setupCommands(self) -> None:
+    self.gameCommands = GameCommands(self)
+    self._autoCommand = cmd.none()
+    self._autoChooser = SendableChooser()
+    self._autoChooser.setDefaultOption("None", cmd.none)
+    self._autoChooser.onChange(lambda command: setattr(self, "_autoCommand", command()))
+    self.autoCommands = AutoCommands(self)
+    SmartDashboard.putData("Robot/Auto/Command", self._autoChooser)
+
+  def _setupTriggers(self) -> None:
+    pass
+
+  def _setupControllers(self) -> None:
     self.driverController = GameController(
       constants.Controllers.kDriverControllerPort, 
       constants.Controllers.kInputDeadband
@@ -80,15 +100,8 @@ class RobotContainer:
       constants.Controllers.kOperatorControllerPort, 
       constants.Controllers.kInputDeadband
     )
-    self.lightsController = LightsController()
-
-  def _initCommands(self) -> None:
-    pass
-    self.gameCommands = GameCommands(self)
-    self.autoCommands = AutoCommands(self.gameCommands)
-
-  def _setupControllers(self) -> None:
-    # DRIVER ========================================
+    DriverStation.silenceJoystickConnectionWarning(True)
+    
     self.driveSubsystem.setDefaultCommand(
       self.driveSubsystem.driveCommand(
         lambda: self.driverController.getLeftY(),
@@ -100,6 +113,7 @@ class RobotContainer:
         self.driverController.leftBumper()).or_(
         self.driverController.a()).or_(
         self.driverController.b()).or_(
+        self.driverController.y()).or_(
         self.driverController.x())
       ).negate()
     ).whileTrue(self.gameCommands.runIntakeCommand())
@@ -128,7 +142,6 @@ class RobotContainer:
     self.driverController.start().onTrue(self.gyroSensor.calibrateCommand())
     self.driverController.back().onTrue(self.gyroSensor.resetCommand())
 
-    # OPERATOR ========================================
     self.operatorController.leftY().whileTrue(
       self.launcherArmSubsystem.runCommand(
         lambda: self.operatorController.getLeftY()
@@ -155,107 +168,10 @@ class RobotContainer:
     # self.operatorController.x().whileTrue(cmd.none())
     # self.operatorController.start().whileTrue(cmd.none())
     self.operatorController.back().whileTrue(self.launcherArmSubsystem.resetToZeroCommand())
-
-  def _setupTriggers(self) -> None:
-    pass
-
-  def _setupAutos(self) -> None:
-    AutoBuilder.configureHolonomic(
-      lambda: self.localizationSubsystem.getPose(), 
-      lambda pose: self.localizationSubsystem.resetPose(pose), 
-      lambda: self.driveSubsystem.getSpeeds(), 
-      lambda chassisSpeeds: self.driveSubsystem.drive(chassisSpeeds), 
-      HolonomicPathFollowerConfig(
-        constants.Subsystems.Drive.kPathFollowerTranslationPIDConstants,
-        constants.Subsystems.Drive.kPathFollowerRotationPIDConstants,
-        constants.Subsystems.Drive.kTranslationSpeedMax, 
-        constants.Subsystems.Drive.kDriveBaseRadius, 
-        ReplanningConfig()
-      ),
-      lambda: utils.getAlliance() == Alliance.Red,
-      self.driveSubsystem
-    )
-
-    self._autoChooser = SendableChooser()
-    self._autoChooser.setDefaultOption("None", cmd.none)
-
-    self._autoChooser.addOption("[ 1 ] 0", self.autoCommands.auto0)
-    self._autoChooser.addOption("[ 1 ] 0_1", self.autoCommands.auto1_0_1)
-    self._autoChooser.addOption("[ 1 ] 0_1_2_3", self.autoCommands.auto1_0_1_2_3)
-    self._autoChooser.addOption("[ 1 ] 0_1_2_3_83", self.autoCommands.auto1_0_1_2_3_83)
-    self._autoChooser.addOption("[ 1 ] 0_1_2_62", self.autoCommands.auto1_0_1_2_62)
-    self._autoChooser.addOption("[ 1 ] 0_1_41", self.autoCommands.auto1_0_1_41)
-    self._autoChooser.addOption("[ 1 ] 0_1_41_51", self.autoCommands.auto1_0_1_41_51)
-    self._autoChooser.addOption("[ 1 ] 0_1_51", self.autoCommands.auto1_0_1_51)
-    self._autoChooser.addOption("[ 1 ] 0_1_51_41", self.autoCommands.auto1_0_1_51_41)
-    self._autoChooser.addOption("[ 1 ] 0_1_51_61", self.autoCommands.auto1_0_1_51_61)
-    self._autoChooser.addOption("[ 1 ] 0_1_51_62", self.autoCommands.auto1_0_1_51_62)
-    self._autoChooser.addOption("[ 1 ] 0_51_62_72", self.autoCommands.auto1_0_51_62_72)
-
-    self._autoChooser.addOption("[ 2 ] 0", self.autoCommands.auto0)
-    self._autoChooser.addOption("[ 2 ] 0_2", self.autoCommands.auto2_0_2) 
-    self._autoChooser.addOption("[ 2 ] 0_2_62", self.autoCommands.auto2_0_2_62) 
-    self._autoChooser.addOption("[ 2 ] 0_2_62_51", self.autoCommands.auto2_0_2_62_51) 
-    self._autoChooser.addOption("[ 2 ] 0_2_62_72", self.autoCommands.auto2_0_2_62_72)
-    self._autoChooser.addOption("[ 2 ] 0_2_72", self.autoCommands.auto2_0_2_72)
-    self._autoChooser.addOption("[ 2 ] 0_2_72_62", self.autoCommands.auto2_0_2_72_62) 
-    self._autoChooser.addOption("[ 2 ] 0_2_1", self.autoCommands.auto2_0_2_1) 
-    self._autoChooser.addOption("[ 2 ] 0_2_3", self.autoCommands.auto2_0_2_3) 
-    self._autoChooser.addOption("[ 2 ] 0_2_3_62", self.autoCommands.auto2_0_2_3_62) 
-
-    self._autoChooser.addOption("[ 3 ] 0", self.autoCommands.auto0)
-    self._autoChooser.addOption("[ 3 ] 0_3", self.autoCommands.auto3_0_3)
-    self._autoChooser.addOption("[ 3 ] 0_3_2_1", self.autoCommands.auto3_0_3_2_1)
-    self._autoChooser.addOption("[ 3 ] 0_3_2_1_41", self.autoCommands.auto3_0_3_2_1_41) 
-    self._autoChooser.addOption("[ 3 ] 0_3_2_1_51", self.autoCommands.auto3_0_3_2_1_51) 
-    self._autoChooser.addOption("[ 3 ] 0_3_2_62", self.autoCommands.auto3_0_3_2_62) 
-    self._autoChooser.addOption("[ 3 ] 0_3_62", self.autoCommands.auto3_0_3_62) 
-    self._autoChooser.addOption("[ 3 ] 0_3_62_72", self.autoCommands.auto3_0_3_62_72) 
-    self._autoChooser.addOption("[ 3 ] 0_3_72", self.autoCommands.auto3_0_3_72) 
-    self._autoChooser.addOption("[ 3 ] 0_3_72_62", self.autoCommands.auto3_0_3_72_62) 
-    self._autoChooser.addOption("[ 3 ] 0_3_73", self.autoCommands.auto3_0_3_73)
-    self._autoChooser.addOption("[ 3 ] 0_3_73_83", self.autoCommands.auto3_0_3_73_83)
-    self._autoChooser.addOption("[ 3 ] 0_3_82", self.autoCommands.auto3_0_3_82) 
-    self._autoChooser.addOption("[ 3 ] 0_3_83", self.autoCommands.auto3_0_3_83) 
-    self._autoChooser.addOption("[ 3 ] 0_3_82_62", self.autoCommands.auto3_0_3_82_62) 
-    self._autoChooser.addOption("[ 3 ] 0_3_82_72", self.autoCommands.auto3_0_3_82_72) 
-    self._autoChooser.addOption("[ 3 ] 0_3_83_62", self.autoCommands.auto3_0_3_83_62) 
-    self._autoChooser.addOption("[ 3 ] 0_3_83_72", self.autoCommands.auto3_0_3_83_72) 
-    self._autoChooser.addOption("[ 3 ] 0_3_83_73", self.autoCommands.auto3_0_3_83_73)
-    self._autoChooser.addOption("[ 3 ] 0_73", self.autoCommands.auto3_0_73)
-    self._autoChooser.addOption("[ 3 ] 0_83", self.autoCommands.auto3_0_83)
-    self._autoChooser.addOption("[ 3 ] 0_73_83", self.autoCommands.auto3_0_73_83)
-    self._autoChooser.addOption("[ 3 ] 0_83_73", self.autoCommands.auto3_0_83_73)
-    self._autoChooser.addOption("[ 3 ] 0_83_72_62", self.autoCommands.auto3_0_83_72_62) 
-
-    self._autoChooser.addOption("[ Test ]", self.autoCommands.test)
-
-    self._autoCommand = cmd.none()
-    self._autoChooser.onChange(lambda autoCommand: setattr(self, "_autoCommand", autoCommand()))
-
-    SmartDashboard.putData("Robot/Auto/Command", self._autoChooser)
     
-  def getAutonomousCommand(self) -> Command:
-    return self._autoCommand
-
-  def autonomousInit(self) -> None:
-    self.resetRobot()
-
-  def teleopInit(self) -> None:
-    self.resetRobot()
-    self.gyroSensor.alignRobotToField(self.localizationSubsystem.getPose())
-
-  def testInit(self) -> None:
-    self.resetRobot()
-
-  def resetRobot(self) -> None:
-    self.driveSubsystem.reset()
-    self.intakeSubsystem.reset()
-    self.launcherArmSubsystem.reset()
-    self.launcherRollersSubsystem.reset()
-
-  def _robotHasInitialZeroResets(self) -> bool:
-    return utils.isCompetitionMode() or self.launcherArmSubsystem.hasInitialZeroReset()
+  def _setupLights(self) -> None:
+    self.lightsController = LightsController()
+    utils.addRobotPeriodic(lambda: self._updateLights())
 
   def _updateLights(self) -> None:
     lightsMode = LightsMode.Default
@@ -274,5 +190,30 @@ class RobotContainer:
               lightsMode = LightsMode.LaunchReady
     self.lightsController.setLightsMode(lightsMode)
 
+  def _robotHasInitialZeroResets(self) -> bool:
+    return utils.isCompetitionMode() or self.launcherArmSubsystem.hasInitialZeroReset()
+
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/HasInitialZeroResets", self._robotHasInitialZeroResets())
+
+  def addAutoOption(self, name: str, command: object) -> None:
+    self._autoChooser.addOption(name, command)
+
+  def getAutoCommand(self) -> Command:
+    return self._autoCommand
+  
+  def autoInit(self) -> None:
+    self.resetRobot()
+
+  def teleopInit(self) -> None:
+    self.resetRobot()
+    self.gyroSensor.resetRobotToField(self.localizationSubsystem.getPose())
+
+  def testInit(self) -> None:
+    self.resetRobot()
+
+  def resetRobot(self) -> None:
+    self.driveSubsystem.reset()
+    self.intakeSubsystem.reset()
+    self.launcherArmSubsystem.reset()
+    self.launcherRollersSubsystem.reset()
