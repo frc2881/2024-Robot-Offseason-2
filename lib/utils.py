@@ -2,7 +2,6 @@ from typing import Any, Callable, Tuple, TypeVar
 import math
 import numpy
 import json
-import time
 import wpilib
 import wpimath
 from wpimath import units
@@ -43,7 +42,7 @@ def isAutonomousMode() -> bool:
   return getRobotMode() == RobotMode.Auto
 
 def isCompetitionMode() -> bool:
-  return DriverStation.getMatchTime() != -1
+  return DriverStation.isFMSAttached()
 
 def getAlliance() -> Alliance:
   return Alliance(DriverStation.getAlliance() or Alliance.Blue)

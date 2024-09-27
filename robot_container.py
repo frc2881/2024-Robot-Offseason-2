@@ -201,7 +201,7 @@ class RobotContainer:
 
   def getAutoCommand(self) -> Command:
     return self._autoCommand
-  
+
   def autoInit(self) -> None:
     self.resetRobot()
 
