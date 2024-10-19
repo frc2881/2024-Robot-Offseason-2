@@ -19,8 +19,8 @@ class Subsystems:
     kTranslationSpeedMax: units.meters_per_second = 6.32
     kRotationSpeedMax: units.radians_per_second = 4 * math.pi # type: ignore
 
-    kInputLimit: units.percent = 0.6
-    kInputRateLimit: units.percent = 0.5
+    kInputLimitDemo: units.percent = 0.5
+    kInputRateLimitDemo: units.percent = 0.33
 
     kDriftCorrectionThetaControllerPIDConstants = PIDConstants(0.01, 0, 0, 0)
     kDriftCorrectionThetaControllerPositionTolerance: float = 0.5
@@ -53,10 +53,13 @@ class Subsystems:
     class SwerveModule:
       kWheelDiameter: units.meters = units.inchesToMeters(3.0)
       kWheelCircumference: units.meters = kWheelDiameter * math.pi
+      kWheelBevelGearTeeth: int = 45
+      kWheelSpurGearTeeth: int = 20
+      kWheelBevelPinionTeeth: int = 15
       kDrivingMotorControllerType = MotorControllerType.SparkFlex
       kDrivingMotorFreeSpeed: units.revolutions_per_minute = 6784
       kDrivingMotorPinionTeeth: int = 14
-      kDrivingMotorReduction: float = (45.0 * 20) / (kDrivingMotorPinionTeeth * 15)
+      kDrivingMotorReduction: float = (kWheelBevelGearTeeth * kWheelSpurGearTeeth) / (kDrivingMotorPinionTeeth * kWheelBevelPinionTeeth)
       kDrivingMotorFreeSpeedRps: float = kDrivingMotorFreeSpeed / 60
       kDriveWheelFreeSpeedRps: float = (kDrivingMotorFreeSpeedRps * kWheelCircumference) / kDrivingMotorReduction 
       kDrivingEncoderPositionConversionFactor: float = (kWheelDiameter * math.pi) / kDrivingMotorReduction

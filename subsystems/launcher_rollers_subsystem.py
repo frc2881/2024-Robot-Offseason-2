@@ -3,6 +3,7 @@ from wpilib import SendableChooser, SmartDashboard
 from wpimath import units
 from rev import CANSparkBase, CANSparkLowLevel, CANSparkFlex, SparkRelativeEncoder
 from lib import utils, logger
+from lib.classes import SpeedMode
 from classes import LauncherRollersSpeeds
 import constants
 
@@ -35,12 +36,12 @@ class LauncherRollersSubsystem(Subsystem):
     self._bottomMotorSpeedDelta: units.percent = 0
     self._topMotorSpeedDelta: units.percent = 0
 
-    self._isDemoMode: bool = False
-    demoModeChooser = SendableChooser()
-    demoModeChooser.setDefaultOption("Disabled", False)
-    demoModeChooser.addOption("Enabled", True)
-    demoModeChooser.onChange(lambda isDemoMode: setattr(self, "_isDemoMode", isDemoMode))
-    SmartDashboard.putData("Robot/Launcher/IsDemoMode", demoModeChooser)
+    self._speedMode: bool = False
+    speedModeChooser = SendableChooser()
+    speedModeChooser.setDefaultOption(SpeedMode.Competition.name, SpeedMode.Competition)
+    speedModeChooser.addOption(SpeedMode.Demo.name, SpeedMode.Demo)
+    speedModeChooser.onChange(lambda speedMode: setattr(self, "_speedMode", speedMode))
+    SmartDashboard.putData("Robot/Launcher/Rollers/SpeedMode", speedModeChooser)
 
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -48,8 +49,8 @@ class LauncherRollersSubsystem(Subsystem):
   def runCommand(self, rollersSpeeds: LauncherRollersSpeeds) -> Command:
     return self.run(
       lambda: [
-        self._bottomMotor.set((self._constants.kSpeedsDemo.bottom if self._isDemoMode else rollersSpeeds.bottom) * self._constants.kMotorMaxForwardOutput),
-        self._topMotor.set((self._constants.kSpeedsDemo.top if self._isDemoMode else rollersSpeeds.top) * self._constants.kMotorMaxForwardOutput),
+        self._bottomMotor.set((self._constants.kSpeedsDemo.bottom if self._speedMode == SpeedMode.Demo else rollersSpeeds.bottom) * self._constants.kMotorMaxForwardOutput),
+        self._topMotor.set((self._constants.kSpeedsDemo.top if self._speedMode == SpeedMode.Demo else rollersSpeeds.top) * self._constants.kMotorMaxForwardOutput),
         self._updateMotorSpeedDeltas()
       ]
     ).finallyDo(
