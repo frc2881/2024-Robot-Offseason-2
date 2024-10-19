@@ -37,8 +37,8 @@ class LauncherRollersSubsystem(Subsystem):
 
     self._isDemoMode: bool = False
     demoModeChooser = SendableChooser()
-    demoModeChooser.setDefaultOption("False", False)
-    demoModeChooser.addOption("True", True)
+    demoModeChooser.setDefaultOption("Disabled", False)
+    demoModeChooser.addOption("Enabled", True)
     demoModeChooser.onChange(lambda isDemoMode: setattr(self, "_isDemoMode", isDemoMode))
     SmartDashboard.putData("Robot/Launcher/IsDemoMode", demoModeChooser)
 
