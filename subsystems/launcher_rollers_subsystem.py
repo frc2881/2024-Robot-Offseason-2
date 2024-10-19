@@ -1,5 +1,5 @@
 from commands2 import Subsystem, Command
-from wpilib import SmartDashboard
+from wpilib import SendableChooser, SmartDashboard
 from wpimath import units
 from rev import CANSparkBase, CANSparkLowLevel, CANSparkFlex, SparkRelativeEncoder
 from lib import utils, logger
@@ -35,14 +35,21 @@ class LauncherRollersSubsystem(Subsystem):
     self._bottomMotorSpeedDelta: units.percent = 0
     self._topMotorSpeedDelta: units.percent = 0
 
+    self._isDemoMode: bool = False
+    demoModeChooser = SendableChooser()
+    demoModeChooser.setDefaultOption("False", False)
+    demoModeChooser.addOption("True", True)
+    demoModeChooser.onChange(lambda isDemoMode: setattr(self, "_isDemoMode", isDemoMode))
+    SmartDashboard.putData("Robot/Launcher/IsDemoMode", demoModeChooser)
+
   def periodic(self) -> None:
     self._updateTelemetry()
 
   def runCommand(self, rollersSpeeds: LauncherRollersSpeeds) -> Command:
     return self.run(
       lambda: [
-        self._bottomMotor.set(rollersSpeeds.bottom * self._constants.kMotorMaxForwardOutput),
-        self._topMotor.set(rollersSpeeds.top * self._constants.kMotorMaxForwardOutput),
+        self._bottomMotor.set((self._constants.kSpeedsDemo.bottom if self._isDemoMode else rollersSpeeds.bottom) * self._constants.kMotorMaxForwardOutput),
+        self._topMotor.set((self._constants.kSpeedsDemo.top if self._isDemoMode else rollersSpeeds.top) * self._constants.kMotorMaxForwardOutput),
         self._updateMotorSpeedDeltas()
       ]
     ).finallyDo(

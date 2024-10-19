@@ -113,15 +113,14 @@ class RobotContainer:
         self.driverController.leftBumper()).or_(
         self.driverController.a()).or_(
         self.driverController.b()).or_(
-        self.driverController.y()).or_(
-        self.driverController.x())
+        self.driverController.y())
       ).negate()
     ).whileTrue(self.gameCommands.runIntakeCommand())
     self.driverController.rightTrigger().and_(self.driverController.leftTrigger()).whileTrue(self.gameCommands.runLauncherCommand())
     self.driverController.rightTrigger().and_(self.driverController.leftBumper()).whileTrue(self.gameCommands.runLauncherCommand())
     self.driverController.rightTrigger().and_(self.driverController.a()).whileTrue(self.gameCommands.scoreAmpCommand())
     self.driverController.rightTrigger().and_(self.driverController.b()).whileTrue(self.gameCommands.runLauncherCommand())
-    self.driverController.rightTrigger().and_(self.driverController.x()).whileTrue(self.gameCommands.runLauncherCommand())
+    self.driverController.rightTrigger().and_(self.driverController.y()).whileTrue(self.gameCommands.runLauncherCommand())
     self.driverController.leftTrigger().whileTrue(self.gameCommands.alignLauncherToTargetCommand())
     self.driverController.rightBumper().whileTrue(self.gameCommands.ejectIntakeCommand())
     self.driverController.leftBumper().whileTrue(self.gameCommands.alignLauncherToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionShuttle, constants.Subsystems.Launcher.Rollers.kSpeedsShuttle))

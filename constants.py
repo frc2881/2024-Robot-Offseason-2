@@ -153,6 +153,7 @@ class Subsystems:
 
       kSpeedsDefault = LauncherRollersSpeeds(1.0, 1.0)
       kSpeedsShuttle = LauncherRollersSpeeds(0.65, 0.65)
+      kSpeedsDemo = LauncherRollersSpeeds(0.3, 0.3)
 
       kLaunchSpeedDeltaMin: units.percent = 0.90
 
