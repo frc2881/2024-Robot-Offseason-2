@@ -49,7 +49,7 @@ class AutoCommands:
   def _pickup(self, path: AutoPath) -> Command:
     return cmd.deadline(
       self._robot.gameCommands.runIntakeCommand(),
-      self._move(self._paths.get(path))
+      self._move(path)
     ).withTimeout(constants.Game.Commands.kAutoPickupTimeout)
   
   def _score(self) -> Command:
