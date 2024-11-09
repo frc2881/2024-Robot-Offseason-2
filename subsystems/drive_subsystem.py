@@ -8,7 +8,7 @@ from wpimath.geometry import Rotation2d, Pose2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics
 from commands2 import Subsystem, Command
 from lib import utils, logger
-from lib.classes import ChassisLocation, MotorIdleMode, DriveSpeedMode, DriveOrientation, DriveDriftCorrection, DriveLockState
+from lib.classes import ChassisLocation, MotorIdleMode, SpeedMode, DriveOrientation, OptionState, LockState
 from lib.components.swerve_module import SwerveModule
 import constants
 
@@ -53,14 +53,14 @@ class DriveSubsystem(Subsystem):
       self._constants.kTargetAlignmentThetaControllerVelocityTolerance
     )
 
-    self._inputXFilter = SlewRateLimiter(self._constants.kInputRateLimit)
-    self._inputYFilter = SlewRateLimiter(self._constants.kInputRateLimit)
-    self._inputRotationFilter = SlewRateLimiter(self._constants.kInputRateLimit)
+    self._inputXFilter = SlewRateLimiter(self._constants.kInputRateLimitDemo)
+    self._inputYFilter = SlewRateLimiter(self._constants.kInputRateLimitDemo)
+    self._inputRotationFilter = SlewRateLimiter(self._constants.kInputRateLimitDemo)
 
-    self._speedMode: DriveSpeedMode = DriveSpeedMode.Competition
+    self._speedMode: SpeedMode = SpeedMode.Competition
     speedModeChooser = SendableChooser()
-    speedModeChooser.setDefaultOption(DriveSpeedMode.Competition.name, DriveSpeedMode.Competition)
-    speedModeChooser.addOption(DriveSpeedMode.Training.name, DriveSpeedMode.Training)
+    speedModeChooser.setDefaultOption(SpeedMode.Competition.name, SpeedMode.Competition)
+    speedModeChooser.addOption(SpeedMode.Demo.name, SpeedMode.Demo)
     speedModeChooser.onChange(lambda speedMode: setattr(self, "_speedMode", speedMode))
     SmartDashboard.putData("Robot/Drive/SpeedMode", speedModeChooser)
 
@@ -71,10 +71,10 @@ class DriveSubsystem(Subsystem):
     orientationChooser.onChange(lambda orientation: setattr(self, "_orientation", orientation))
     SmartDashboard.putData("Robot/Drive/Orientation", orientationChooser)
 
-    self._driftCorrection: DriveDriftCorrection = DriveDriftCorrection.Enabled
+    self._driftCorrection: OptionState = OptionState.Enabled
     driftCorrectionChooser = SendableChooser()
-    driftCorrectionChooser.setDefaultOption(DriveDriftCorrection.Enabled.name, DriveDriftCorrection.Enabled)
-    driftCorrectionChooser.addOption(DriveDriftCorrection.Disabled.name, DriveDriftCorrection.Disabled)
+    driftCorrectionChooser.setDefaultOption(OptionState.Enabled.name, OptionState.Enabled)
+    driftCorrectionChooser.addOption(OptionState.Disabled.name, OptionState.Disabled)
     driftCorrectionChooser.onChange(lambda driftCorrection: setattr(self, "_driftCorrection", driftCorrection))
     SmartDashboard.putData("Robot/Drive/DriftCorrection", driftCorrectionChooser)
 
@@ -84,7 +84,7 @@ class DriveSubsystem(Subsystem):
     idleModeChooser.onChange(lambda idleMode: self._setIdleMode(idleMode))
     SmartDashboard.putData("Robot/Drive/IdleMode", idleModeChooser)
 
-    self._lockState: DriveLockState = DriveLockState.Unlocked
+    self._lockState: LockState = LockState.Unlocked
 
     SmartDashboard.putNumber("Robot/Drive/Chassis/Length", self._constants.kWheelBase)
     SmartDashboard.putNumber("Robot/Drive/Chassis/Width", self._constants.kTrackWidth)
@@ -102,11 +102,11 @@ class DriveSubsystem(Subsystem):
     return self.run(
       lambda: self._drive(getInputX(), getInputY(), getInputRotation())
     ).onlyIf(
-      lambda: self._lockState != DriveLockState.Locked
+      lambda: self._lockState != LockState.Locked
     ).withName("DriveSubsystem:Drive")
 
   def _drive(self, inputX: units.percent, inputY: units.percent, inputRotation: units.percent) -> None:
-    if self._driftCorrection == DriveDriftCorrection.Enabled:
+    if self._driftCorrection == OptionState.Enabled:
       isTranslating: bool = inputX != 0 or inputY != 0
       isRotating: bool = inputRotation != 0
       if isTranslating and not isRotating and not self._isDriftCorrectionActive:
@@ -120,10 +120,10 @@ class DriveSubsystem(Subsystem):
         if self._driftCorrectionThetaController.atSetpoint():
           inputRotation = 0
 
-    if self._speedMode == DriveSpeedMode.Training:
-      inputX = self._inputXFilter.calculate(inputX * self._constants.kInputLimit)
-      inputY = self._inputYFilter.calculate(inputY * self._constants.kInputLimit)
-      inputRotation = self._inputRotationFilter.calculate(inputRotation * self._constants.kInputLimit)
+    if self._speedMode == SpeedMode.Demo:
+      inputX = self._inputXFilter.calculate(inputX * self._constants.kInputLimitDemo)
+      inputY = self._inputYFilter.calculate(inputY * self._constants.kInputLimitDemo)
+      inputRotation = self._inputRotationFilter.calculate(inputRotation * self._constants.kInputLimitDemo)
 
     speedX: units.meters_per_second = inputX * self._constants.kTranslationSpeedMax
     speedY: units.meters_per_second = inputY * self._constants.kTranslationSpeedMax
@@ -176,13 +176,13 @@ class DriveSubsystem(Subsystem):
 
   def lockCommand(self) -> Command:
     return self.startEnd(
-      lambda: self._setLockState(DriveLockState.Locked),
-      lambda: self._setLockState(DriveLockState.Unlocked)
+      lambda: self._setLockState(LockState.Locked),
+      lambda: self._setLockState(LockState.Unlocked)
     ).withName("DriveSubsystem:Lock")
   
-  def _setLockState(self, lockState: DriveLockState) -> None:
+  def _setLockState(self, lockState: LockState) -> None:
     self._lockState = lockState
-    if lockState == DriveLockState.Locked:
+    if lockState == LockState.Locked:
       self._swerveDriveModules[ChassisLocation.FrontLeft.value].setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
       self._swerveDriveModules[ChassisLocation.FrontRight.value].setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
       self._swerveDriveModules[ChassisLocation.RearLeft.value].setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
@@ -198,7 +198,7 @@ class DriveSubsystem(Subsystem):
         self._targetAlignmentThetaController.setSetpoint(utils.wrapAngle(getTargetHeading() + self._constants.kTargetAlignmentHeadingInversion))  
       ]
     ).onlyIf(
-      lambda: self._lockState != DriveLockState.Locked
+      lambda: self._lockState != LockState.Locked
     ).until(
       lambda: self._isAlignedToTarget
     ).withName("DriveSubsystem:AlignToTarget")
