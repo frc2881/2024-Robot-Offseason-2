@@ -1,5 +1,5 @@
 from commands2 import Command, cmd
-from wpilib import SerialPort, SmartDashboard, RobotBase
+from wpilib import SmartDashboard, RobotBase
 from wpimath import units
 from wpimath.geometry import Rotation2d, Pose2d
 import navx
@@ -8,9 +8,9 @@ from lib import utils
 class GyroSensor_NAVX2():
   def __init__(
       self,
-      serialPort: SerialPort.Port
+      comType: navx.AHRS.NavXComType
     ) -> None:
-    self._gyro = navx.AHRS(serialPort)
+    self._gyro = navx.AHRS(comType)
 
     self._baseKey = f'Robot/Sensor/Gyro'
 

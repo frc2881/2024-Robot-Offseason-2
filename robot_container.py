@@ -1,6 +1,8 @@
 from commands2 import Command, cmd
 from wpilib import DriverStation, SendableChooser, SmartDashboard
-from pathplannerlib.auto import AutoBuilder, HolonomicPathFollowerConfig, ReplanningConfig
+from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.config import RobotConfig, ModuleConfig
+from pathplannerlib.controller import PPHolonomicDriveController
 from lib import logger, utils
 from lib.classes import Alliance, RobotState
 from lib.controllers.game_controller import GameController
@@ -30,7 +32,8 @@ class RobotContainer:
     utils.addRobotPeriodic(lambda: self._updateTelemetry())
 
   def _setupSensors(self) -> None:
-    self.gyroSensor = GyroSensor_NAVX2(constants.Sensors.Gyro.NAVX2.kSerialPort)
+    self.gyroSensor = GyroSensor_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
+
     self.poseSensors: list[PoseSensor] = []
     for location, transform in constants.Sensors.Pose.kPoseSensors.items():
       self.poseSensors.append(PoseSensor(
@@ -40,43 +43,62 @@ class RobotContainer:
         constants.Sensors.Pose.kFallbackPoseStrategy,
         constants.Game.Field.kAprilTagFieldLayout
       ))
+
     SmartDashboard.putString("Robot/Sensor/Camera/Streams", utils.toJson(constants.Sensors.Camera.kStreams))
+
     self.launcherDistanceSensor = DistanceSensor(
       constants.Sensors.Distance.Launcher.kSensorName,
       constants.Sensors.Distance.Launcher.kMinTargetDistance,
       constants.Sensors.Distance.Launcher.kMaxTargetDistance
     )
+
     self.intakeObjectSensor = ObjectSensor(constants.Sensors.Object.Intake.kCameraName)
     
   def _setupSubsystems(self) -> None:
     self.driveSubsystem = DriveSubsystem(
       lambda: self.gyroSensor.getHeading()
     )
+
     self.localizationSubsystem = LocalizationSubsystem(
       self.poseSensors,
       lambda: self.gyroSensor.getRotation(),
       lambda: self.driveSubsystem.getSwerveModulePositions()
     )
-    AutoBuilder.configureHolonomic(
+
+    AutoBuilder.configure(
       lambda: self.localizationSubsystem.getPose(), 
       lambda pose: self.localizationSubsystem.resetPose(pose), 
       lambda: self.driveSubsystem.getSpeeds(), 
       lambda chassisSpeeds: self.driveSubsystem.drive(chassisSpeeds), 
-      HolonomicPathFollowerConfig(
+      PPHolonomicDriveController(
         constants.Subsystems.Drive.kPathFollowerTranslationPIDConstants,
-        constants.Subsystems.Drive.kPathFollowerRotationPIDConstants,
-        constants.Subsystems.Drive.kTranslationSpeedMax, 
-        constants.Subsystems.Drive.kDriveBaseRadius, 
-        ReplanningConfig()
+        constants.Subsystems.Drive.kPathFollowerRotationPIDConstants
+      ),
+      RobotConfig(
+        constants.Subsystems.Drive.kRobotMass,
+        constants.Subsystems.Drive.kRobotMOI,
+        ModuleConfig(
+          constants.Subsystems.Drive.kDriveBaseRadius,
+          constants.Subsystems.Drive.kTranslationSpeedMax,
+          constants.Subsystems.Drive.SwerveModule.kWheelCOF,
+          constants.Subsystems.Drive.SwerveModule.kDrivingMotorType,
+          constants.Subsystems.Drive.SwerveModule.kDrivingMotorCurrentLimit,
+          constants.Subsystems.Drive.SwerveModule.kDrivingMotorCount    
+        ),
+        None,
+        constants.Subsystems.Drive.kTrackWidth
       ),
       lambda: utils.getAlliance() == Alliance.Red,
       self.driveSubsystem
     )
+
     self.intakeSubsystem = IntakeSubsystem(
       lambda: self.launcherDistanceSensor.hasTarget(),
       lambda: self.launcherDistanceSensor.getDistance()
     )
+
     self.launcherArmSubsystem = LauncherArmSubsystem()
+    
     self.launcherRollersSubsystem = LauncherRollersSubsystem()
     
   def _setupCommands(self) -> None:

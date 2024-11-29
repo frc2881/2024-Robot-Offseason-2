@@ -7,7 +7,7 @@ import wpimath
 from wpimath import units
 from wpimath.geometry import Pose2d, Translation2d
 from wpilib import DriverStation
-from rev import CANSparkBase, REVLibError
+from rev import SparkBase, SparkBaseConfig, REVLibError
 from lib import logger
 from lib.classes import Alliance, RobotMode, RobotState
 import robot
@@ -72,11 +72,20 @@ def getInterpolatedValue(x: float, xs: list[float], ys: list[float]) -> float:
   except:
     return math.nan
 
-def enableSoftLimits(controller: CANSparkBase, isEnabled: bool) -> None:
-  controller.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, isEnabled)
-  controller.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, isEnabled)
+def setSparkSoftLimitsEnabled(motor: SparkBase, enabled: bool) -> None:
+  config = SparkBaseConfig()
+  (config.softLimit
+    .forwardSoftLimitEnabled(enabled)
+    .reverseSoftLimitEnabled(enabled))
+  setSparkConfig(
+    motor.configure(
+      config, 
+      SparkBase.ResetMode.kNoResetSafeParameters, 
+      SparkBase.PersistMode.kNoPersistParameters
+    )
+  )
 
-def validateParam(error: REVLibError) -> None:
+def setSparkConfig(error: REVLibError) -> None:
   if error != REVLibError.kOk:
     logger.error(f'REVLibError: {error}')
 

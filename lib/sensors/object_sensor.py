@@ -1,6 +1,6 @@
 import math
 from wpilib import SmartDashboard
-from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
+from photonlibpy.targeting import PhotonTrackedTarget
 from photonlibpy.photonCamera import PhotonCamera
 from lib import utils
 

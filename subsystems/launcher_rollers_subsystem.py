@@ -1,7 +1,7 @@
 from commands2 import Subsystem, Command
 from wpilib import SendableChooser, SmartDashboard
 from wpimath import units
-from rev import CANSparkBase, CANSparkLowLevel, CANSparkFlex, SparkRelativeEncoder
+from rev import SparkBase, SparkBaseConfig, SparkLowLevel, SparkFlex, SparkRelativeEncoder
 from lib import utils, logger
 from lib.classes import SpeedMode
 from classes import LauncherRollersSpeeds
@@ -13,25 +13,37 @@ class LauncherRollersSubsystem(Subsystem):
     
     self._constants = constants.Subsystems.Launcher.Rollers
 
-    self._bottomMotor = CANSparkFlex(self._constants.kBottomMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    self._bottomMotor = SparkFlex(self._constants.kBottomMotorCANId, SparkLowLevel.MotorType.kBrushless)
+    self._bottomMotorConfig = SparkBaseConfig()
+    (self._bottomMotorConfig
+      .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
+      .smartCurrentLimit(self._constants.kMotorCurrentLimit)
+      .secondaryCurrentLimit(self._constants.kMotorCurrentLimit)
+      .inverted(True))
+    utils.setSparkConfig(
+      self._bottomMotor.configure(
+        self._bottomMotorConfig,
+        SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters
+      )
+    )
     self._bottomMotorEncoder = self._bottomMotor.getEncoder()
-    self._bottomMotor.setCANMaxRetries(10)
-    utils.validateParam(self._bottomMotor.restoreFactoryDefaults())
-    utils.validateParam(self._bottomMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
-    utils.validateParam(self._bottomMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
-    utils.validateParam(self._bottomMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
-    self._bottomMotor.setInverted(True)
-    utils.validateParam(self._bottomMotor.burnFlash())
 
-    self._topMotor = CANSparkFlex(self._constants.kTopMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
+    self._topMotor = SparkFlex(self._constants.kTopMotorCANId, SparkLowLevel.MotorType.kBrushless)
+    self._topMotorConfig = SparkBaseConfig()
+    (self._topMotorConfig
+      .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
+      .smartCurrentLimit(self._constants.kMotorCurrentLimit)
+      .secondaryCurrentLimit(self._constants.kMotorCurrentLimit)
+      .inverted(False))
+    utils.setSparkConfig(
+      self._topMotor.configure(
+        self._topMotorConfig,
+        SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters
+      )
+    )
     self._topMotorEncoder = self._topMotor.getEncoder()
-    self._topMotor.setCANMaxRetries(10)
-    utils.validateParam(self._topMotor.restoreFactoryDefaults())
-    utils.validateParam(self._topMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
-    utils.validateParam(self._topMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
-    utils.validateParam(self._topMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
-    self._topMotor.setInverted(False)
-    utils.validateParam(self._topMotor.burnFlash())
 
     self._bottomMotorSpeedDelta: units.percent = 0
     self._topMotorSpeedDelta: units.percent = 0
@@ -61,16 +73,15 @@ class LauncherRollersSubsystem(Subsystem):
     self._bottomMotorSpeedDelta = self._getMotorSpeedDelta(self._bottomMotor, self._bottomMotorEncoder)
     self._topMotorSpeedDelta = self._getMotorSpeedDelta(self._topMotor, self._topMotorEncoder)
 
-  def _getMotorSpeedDelta(self, motor: CANSparkBase, encoder: SparkRelativeEncoder) -> units.percent:
+  def _getMotorSpeedDelta(self, motor: SparkBase, encoder: SparkRelativeEncoder) -> units.percent:
     return encoder.getVelocity() / (motor.get() * self._constants.kMotorFreeSpeed) if motor.get() != 0 else 0
 
   def isLaunchReady(self) -> bool:
-    # TODO: validate speed telemetry for launch ready timeout
     return self._bottomMotorSpeedDelta >= self._constants.kLaunchSpeedDeltaMin and self._topMotorSpeedDelta >= self._constants.kLaunchSpeedDeltaMin
 
   def reset(self) -> None:
-    self._bottomMotor.set(0)
-    self._topMotor.set(0)
+    self._bottomMotor.stopMotor()
+    self._topMotor.stopMotor()
     self._bottomMotorSpeedDelta = 0
     self._topMotorSpeedDelta = 0
 

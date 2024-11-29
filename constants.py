@@ -1,9 +1,10 @@
 import math
-from wpilib import SerialPort
+from wpimath import units
 from wpimath.geometry import Transform3d, Translation3d, Rotation3d, Pose3d, Translation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
-from wpimath import units
+from wpimath.system.plant import DCMotor
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
+import navx
 from photonlibpy.photonPoseEstimator import PoseStrategy
 from pathplannerlib.controller import PIDConstants as PathPlannerPIDConstants
 from pathplannerlib.pathfinding import PathConstraints
@@ -15,6 +16,8 @@ class Subsystems:
     kTrackWidth: units.meters = units.inchesToMeters(21.5)
     kWheelBase: units.meters = units.inchesToMeters(24.5)
     kDriveBaseRadius: units.meters = Translation2d().distance(Translation2d(kWheelBase / 2, kTrackWidth / 2))
+    kRobotMass: units.kilograms = 46.0 # TODO: calculate correct constant value
+    kRobotMOI: float = 1.0 # TODO: calculate correct constant value
 
     kTranslationSpeedMax: units.meters_per_second = 6.32
     kRotationSpeedMax: units.radians_per_second = 4 * math.pi # type: ignore
@@ -56,6 +59,9 @@ class Subsystems:
       kWheelBevelGearTeeth: int = 45
       kWheelSpurGearTeeth: int = 20
       kWheelBevelPinionTeeth: int = 15
+      kWheelCOF: float = 1.0 # TODO: calculate correct constant value
+      kDrivingMotorCount: int = 1
+      kDrivingMotorType = DCMotor.neoVortex(kDrivingMotorCount)
       kDrivingMotorControllerType = MotorControllerType.SparkFlex
       kDrivingMotorFreeSpeed: units.revolutions_per_minute = 6784
       kDrivingMotorPinionTeeth: int = 14
@@ -114,7 +120,7 @@ class Subsystems:
       kMotorPositionConversionFactor: float = 1.0 / 3.0
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
-      kMotorSmartMotionMaxAccel: float = 66.0 / kMotorVelocityConversionFactor 
+      kMotorSmartMotionMaxAcceleration: float = 66.0 / kMotorVelocityConversionFactor 
 
       kInputLimit: units.percent = 0.5
       kResetSpeed: units.percent = 0.1
@@ -163,7 +169,7 @@ class Subsystems:
 class Sensors:
   class Gyro:
     class NAVX2:
-      kSerialPort = SerialPort.Port.kUSB1
+      kComType = navx.AHRS.NavXComType.kUSB1
 
   class Pose:
     kPoseSensors: dict[ChassisLocation, Transform3d] = {
