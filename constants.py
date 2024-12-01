@@ -2,7 +2,6 @@ import math
 from wpimath import units
 from wpimath.geometry import Transform3d, Translation3d, Rotation3d, Pose3d, Translation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
-from wpimath.system.plant import DCMotor
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 import navx
 from photonlibpy.photonPoseEstimator import PoseStrategy
@@ -15,9 +14,6 @@ class Subsystems:
   class Drive:
     kTrackWidth: units.meters = units.inchesToMeters(21.5)
     kWheelBase: units.meters = units.inchesToMeters(24.5)
-    kDriveBaseRadius: units.meters = Translation2d().distance(Translation2d(kWheelBase / 2, kTrackWidth / 2))
-    kRobotMass: units.kilograms = 46.0 # TODO: calculate correct constant value
-    kRobotMOI: float = 1.0 # TODO: calculate correct constant value
 
     kTranslationSpeedMax: units.meters_per_second = 6.32
     kRotationSpeedMax: units.radians_per_second = 4 * math.pi # type: ignore
@@ -32,12 +28,12 @@ class Subsystems:
     kTargetAlignmentThetaControllerPIDConstants = PIDConstants(0.075, 0, 0, 0)
     kTargetAlignmentThetaControllerPositionTolerance: float = 1.0
     kTargetAlignmentThetaControllerVelocityTolerance: float = 1.0
-    kTargetAlignmentCarpetFrictionCoeff: float = 0.15
+    kTargetAlignmentCarpetFrictionCoeff: float = 0.2
     kTargetAlignmentHeadingInversion: units.degrees = 180.0
 
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
-    kPathFindingConstraints = PathConstraints(4.2, 3.6, units.degreesToRadians(360), units.degreesToRadians(720))
+    kPathFindingConstraints = PathConstraints(4.2, 3.6, units.degreesToRadians(540), units.degreesToRadians(720))
 
     kSwerveModules = (
       SwerveModuleConfig(ChassisLocation.FrontLeft, 3, 4, -math.pi / 2, Translation2d(kWheelBase / 2, kTrackWidth / 2)),
@@ -55,19 +51,15 @@ class Subsystems:
 
     class SwerveModule:
       kWheelDiameter: units.meters = units.inchesToMeters(3.0)
-      kWheelCircumference: units.meters = kWheelDiameter * math.pi
       kWheelBevelGearTeeth: int = 45
       kWheelSpurGearTeeth: int = 20
       kWheelBevelPinionTeeth: int = 15
-      kWheelCOF: float = 1.0 # TODO: calculate correct constant value
-      kDrivingMotorCount: int = 1
-      kDrivingMotorType = DCMotor.neoVortex(kDrivingMotorCount)
       kDrivingMotorControllerType = MotorControllerType.SparkFlex
       kDrivingMotorFreeSpeed: units.revolutions_per_minute = 6784
       kDrivingMotorPinionTeeth: int = 14
       kDrivingMotorReduction: float = (kWheelBevelGearTeeth * kWheelSpurGearTeeth) / (kDrivingMotorPinionTeeth * kWheelBevelPinionTeeth)
       kDrivingMotorFreeSpeedRps: float = kDrivingMotorFreeSpeed / 60
-      kDriveWheelFreeSpeedRps: float = (kDrivingMotorFreeSpeedRps * kWheelCircumference) / kDrivingMotorReduction 
+      kDriveWheelFreeSpeedRps: float = (kDrivingMotorFreeSpeedRps * (kWheelDiameter * math.pi)) / kDrivingMotorReduction 
       kDrivingEncoderPositionConversionFactor: float = (kWheelDiameter * math.pi) / kDrivingMotorReduction
       kDrivingEncoderVelocityConversionFactor: float = ((kWheelDiameter * math.pi) / kDrivingMotorReduction) / 60.0
       kTurningEncoderInverted: bool = True

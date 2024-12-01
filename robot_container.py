@@ -1,7 +1,7 @@
 from commands2 import Command, cmd
 from wpilib import DriverStation, SendableChooser, SmartDashboard
 from pathplannerlib.auto import AutoBuilder
-from pathplannerlib.config import RobotConfig, ModuleConfig
+from pathplannerlib.config import RobotConfig
 from pathplannerlib.controller import PPHolonomicDriveController
 from lib import logger, utils
 from lib.classes import Alliance, RobotState
@@ -74,20 +74,7 @@ class RobotContainer:
         constants.Subsystems.Drive.kPathFollowerTranslationPIDConstants,
         constants.Subsystems.Drive.kPathFollowerRotationPIDConstants
       ),
-      RobotConfig(
-        constants.Subsystems.Drive.kRobotMass,
-        constants.Subsystems.Drive.kRobotMOI,
-        ModuleConfig(
-          constants.Subsystems.Drive.kDriveBaseRadius,
-          constants.Subsystems.Drive.kTranslationSpeedMax,
-          constants.Subsystems.Drive.SwerveModule.kWheelCOF,
-          constants.Subsystems.Drive.SwerveModule.kDrivingMotorType,
-          constants.Subsystems.Drive.SwerveModule.kDrivingMotorCurrentLimit,
-          constants.Subsystems.Drive.SwerveModule.kDrivingMotorCount    
-        ),
-        None,
-        constants.Subsystems.Drive.kTrackWidth
-      ),
+      RobotConfig.fromGUISettings(),
       lambda: utils.getAlliance() == Alliance.Red,
       self.driveSubsystem
     )
