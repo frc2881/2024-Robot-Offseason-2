@@ -9,9 +9,10 @@
   * Open this project in PyCharm and follow the documented steps to create a local Python virtual environment found at: https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html
     * Note: configure the virtual environment directory path with `.venv` as the root (as opposed to `venv`) to maintain compatibility between PyCharm and Visual Studio Code environments when needed
 * After the Python virtual environment is created and ready in either Visual Studio Code or PyCharm, access and run the the install, build, and deployment tasks for the project as needed (Command Palette in Visual Studio Code and Run Configurations in PyCharm):
-    * `RobotPy: Step 1 - Install / Upgrade RobotPy`
-    * `RobotPy: Step 2 - Download & Sync RobotPy for roboRIO`
-    * `RobotPy: Step 3 - Simulate Robot Code (Optional)`
+    * `RobotPy: Step 1 - Install RobotPy`
+    * `RobotPy: Step 2 - Sync RobotPy`
+    * `RobotPy: Step 3 - Test Robot Code (Optional)`
+    * `RobotPy: Step 4 - Simulate Robot Code (Optional)`
     * `RobotPy: Step 4 - Deploy Robot Code`
 
 ## Project Notes & Status

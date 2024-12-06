@@ -15,8 +15,8 @@ class LauncherArmSubsystem(Subsystem):
 
     self._hasInitialZeroReset: bool = False
     self._isAlignedToTarget: bool = False
-    self._targetDistances = list(map(lambda p: p.distance, self._constants.kPositionTargets))
-    self._targetPositions = list(map(lambda p: p.position, self._constants.kPositionTargets))
+    self._targetDistances = tuple(t.distance for t in self._constants.kPositionTargets)
+    self._targetPositions = tuple(t.position for t in self._constants.kPositionTargets)
     
     SmartDashboard.putString("Robot/Launcher/Arm/Positions", utils.toJson(self._constants.kPositionTargets))
 
