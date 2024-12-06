@@ -16,7 +16,7 @@ class GameCommands:
   def runIntakeCommand(self) -> Command:
     return cmd.sequence(
       cmd.either(
-        self._robot.intakeSubsystem.runCommand().deadlineWith(
+        self._robot.intakeSubsystem.runCommand().deadlineFor(
           self._robot.launcherArmSubsystem.alignToPositionCommand(constants.Subsystems.Launcher.Arm.kPositionIntake)
         ),
         self._robot.intakeSubsystem.reloadCommand(),
