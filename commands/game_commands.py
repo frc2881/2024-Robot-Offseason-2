@@ -34,12 +34,12 @@ class GameCommands:
     return cmd.sequence(
       cmd.parallel(
         self._robot.driveSubsystem.alignToTargetCommand(
-          lambda: self._robot.localizationSubsystem.getPose(), 
-          lambda: self._robot.localizationSubsystem.getTargetHeading()
+          self._robot.localizationSubsystem.getPose, 
+          self._robot.localizationSubsystem.getTargetHeading
         ),
         self.rumbleControllersCommand(ControllerRumbleMode.Operator, ControllerRumblePattern.Short),
         cmd.sequence(
-          cmd.waitUntil(lambda: self._robot.driveSubsystem.isAlignedToTarget()),
+          cmd.waitUntil(self._robot.driveSubsystem.isAlignedToTarget),
           self.rumbleControllersCommand(ControllerRumbleMode.Driver, ControllerRumblePattern.Short)
         )
       )
@@ -49,7 +49,7 @@ class GameCommands:
     return cmd.sequence(
       self._robot.intakeSubsystem.alignCommand(),
       cmd.parallel(
-        self._robot.launcherArmSubsystem.alignToTargetCommand(lambda: self._robot.localizationSubsystem.getTargetDistance()),
+        self._robot.launcherArmSubsystem.alignToTargetCommand(self._robot.localizationSubsystem.getTargetDistance),
         self._robot.launcherRollersSubsystem.runCommand(constants.Subsystems.Launcher.Rollers.kSpeedsDefault)
       )
     ).withName("GameCommands:AlignLauncherToTarget")
@@ -79,10 +79,10 @@ class GameCommands:
   
   def runLauncherCommand(self) -> Command:
     return cmd.sequence(
-      cmd.waitUntil(lambda: self._robot.launcherRollersSubsystem.isLaunchReady()).withTimeout(constants.Game.Commands.kScoringLaunchTimeout),
+      cmd.waitUntil(self._robot.launcherRollersSubsystem.isLaunchReady).withTimeout(constants.Game.Commands.kScoringLaunchTimeout),
       self._robot.intakeSubsystem.launchCommand() 
     ).onlyIf(
-      lambda: self._robot.intakeSubsystem.isLaunchReady()
+      self._robot.intakeSubsystem.isLaunchReady
     ).until(
       lambda: not self._robot.intakeSubsystem.isLoaded()
     ).finallyDo(lambda end: [

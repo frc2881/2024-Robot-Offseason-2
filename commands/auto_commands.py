@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from enum import Enum, auto
 from commands2 import Command, cmd
+from wpilib import SendableChooser
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.path import PathPlannerPath
 if TYPE_CHECKING: from robot_container import RobotContainer
@@ -35,7 +36,6 @@ class AutoCommands:
     self._robot = robot
 
     self._paths = { path: PathPlannerPath.fromPathFile(path.name) for path in AutoPath }
-    self._addAutoOptions()
 
   def _move(self, path: AutoPath) -> Command:
     return AutoBuilder.pathfindThenFollowPath(
@@ -46,7 +46,7 @@ class AutoCommands:
     )
   
   def _moveToScore(self, path: AutoPath) -> Command:
-    return self._move(path).onlyIf(lambda: self._robot.intakeSubsystem.isLoaded())
+    return self._move(path).onlyIf(self._robot.intakeSubsystem.isLoaded)
   
   def _pickup(self, path: AutoPath) -> Command:
     return cmd.deadline(
@@ -65,54 +65,56 @@ class AutoCommands:
       self._robot.gameCommands.launchAtPositionCommand(constants.Subsystems.Launcher.Arm.kPositionSubwoofer)
     )
 
-  def _addAutoOptions(self) -> None:
-    self._robot.autoChooser.addOption("[0]", self.auto_0)
+  def addAutoOptions(self, chooser: SendableChooser) -> None:
+    chooser.setDefaultOption("None", cmd.none)
 
-    self._robot.autoChooser.addOption("[1] 0_1", lambda: self.auto_1_0_1())
-    self._robot.autoChooser.addOption("[1] 0_1_2_3", lambda: self.auto_1_0_1_2_3())
-    self._robot.autoChooser.addOption("[1] 0_1_2_3_83", lambda: self.auto_1_0_1_2_3_83())
-    self._robot.autoChooser.addOption("[1] 0_1_2_62", lambda: self.auto_1_0_1_2_62())
-    self._robot.autoChooser.addOption("[1] 0_1_41", lambda: self.auto_1_0_1_41())
-    self._robot.autoChooser.addOption("[1] 0_1_41_51", lambda: self.auto_1_0_1_41_51())
-    self._robot.autoChooser.addOption("[1] 0_1_51", lambda: self.auto_1_0_1_51())
-    self._robot.autoChooser.addOption("[1] 0_1_51_41", lambda: self.auto_1_0_1_51_41())
-    self._robot.autoChooser.addOption("[1] 0_1_51_61", lambda: self.auto_1_0_1_51_61())
-    self._robot.autoChooser.addOption("[1] 0_1_51_62", lambda: self.auto_1_0_1_51_62())
-    self._robot.autoChooser.addOption("[1] 0_51_62_72", lambda: self.auto_1_0_51_62_72())
+    chooser.addOption("[0]", self.auto_0)
 
-    self._robot.autoChooser.addOption("[2] 0_2", lambda: self.auto_2_0_2()) 
-    self._robot.autoChooser.addOption("[2] 0_2_62", lambda: self.auto_2_0_2_62()) 
-    self._robot.autoChooser.addOption("[2] 0_2_62_51", lambda: self.auto_2_0_2_62_51()) 
-    self._robot.autoChooser.addOption("[2] 0_2_62_72", lambda: self.auto_2_0_2_62_72())
-    self._robot.autoChooser.addOption("[2] 0_2_72", lambda: self.auto_2_0_2_72())
-    self._robot.autoChooser.addOption("[2] 0_2_72_62", lambda: self.auto_2_0_2_72_62()) 
-    self._robot.autoChooser.addOption("[2] 0_2_1", lambda: self.auto_2_0_2_1()) 
-    self._robot.autoChooser.addOption("[2] 0_2_3", lambda: self.auto_2_0_2_3()) 
-    self._robot.autoChooser.addOption("[2] 0_2_3_62", lambda: self.auto_2_0_2_3_62()) 
+    chooser.addOption("[1] 0_1", self.auto_1_0_1)
+    chooser.addOption("[1] 0_1_2_3", self.auto_1_0_1_2_3)
+    chooser.addOption("[1] 0_1_2_3_83", self.auto_1_0_1_2_3_83)
+    chooser.addOption("[1] 0_1_2_62", self.auto_1_0_1_2_62)
+    chooser.addOption("[1] 0_1_41", self.auto_1_0_1_41)
+    chooser.addOption("[1] 0_1_41_51", self.auto_1_0_1_41_51)
+    chooser.addOption("[1] 0_1_51", self.auto_1_0_1_51)
+    chooser.addOption("[1] 0_1_51_41", self.auto_1_0_1_51_41)
+    chooser.addOption("[1] 0_1_51_61", self.auto_1_0_1_51_61)
+    chooser.addOption("[1] 0_1_51_62", self.auto_1_0_1_51_62)
+    chooser.addOption("[1] 0_51_62_72", self.auto_1_0_51_62_72)
 
-    self._robot.autoChooser.addOption("[3] 0_3", lambda: self.auto_3_0_3())
-    self._robot.autoChooser.addOption("[3] 0_3_2_1", lambda: self.auto_3_0_3_2_1())
-    self._robot.autoChooser.addOption("[3] 0_3_2_1_41", lambda: self.auto_3_0_3_2_1_41()) 
-    self._robot.autoChooser.addOption("[3] 0_3_2_1_51", lambda: self.auto_3_0_3_2_1_51()) 
-    self._robot.autoChooser.addOption("[3] 0_3_2_62", lambda: self.auto_3_0_3_2_62()) 
-    self._robot.autoChooser.addOption("[3] 0_3_62", lambda: self.auto_3_0_3_62()) 
-    self._robot.autoChooser.addOption("[3] 0_3_62_72", lambda: self.auto_3_0_3_62_72()) 
-    self._robot.autoChooser.addOption("[3] 0_3_72", lambda: self.auto_3_0_3_72()) 
-    self._robot.autoChooser.addOption("[3] 0_3_72_62", lambda: self.auto_3_0_3_72_62()) 
-    self._robot.autoChooser.addOption("[3] 0_3_73", lambda: self.auto_3_0_3_73())
-    self._robot.autoChooser.addOption("[3] 0_3_73_83", lambda: self.auto_3_0_3_73_83())
-    self._robot.autoChooser.addOption("[3] 0_3_82", lambda: self.auto_3_0_3_82()) 
-    self._robot.autoChooser.addOption("[3] 0_3_83", lambda: self.auto_3_0_3_83()) 
-    self._robot.autoChooser.addOption("[3] 0_3_82_62", lambda: self.auto_3_0_3_82_62()) 
-    self._robot.autoChooser.addOption("[3] 0_3_82_72", lambda: self.auto_3_0_3_82_72()) 
-    self._robot.autoChooser.addOption("[3] 0_3_83_62", lambda: self.auto_3_0_3_83_62()) 
-    self._robot.autoChooser.addOption("[3] 0_3_83_72", lambda: self.auto_3_0_3_83_72()) 
-    self._robot.autoChooser.addOption("[3] 0_3_83_73", lambda: self.auto_3_0_3_83_73())
-    self._robot.autoChooser.addOption("[3] 0_73", lambda: self.auto_3_0_73())
-    self._robot.autoChooser.addOption("[3] 0_83", lambda: self.auto_3_0_83())
-    self._robot.autoChooser.addOption("[3] 0_73_83", lambda: self.auto_3_0_73_83())
-    self._robot.autoChooser.addOption("[3] 0_83_73", lambda: self.auto_3_0_83_73())
-    self._robot.autoChooser.addOption("[3] 0_83_72_62", lambda: self.auto_3_0_83_72_62())   
+    chooser.addOption("[2] 0_2", self.auto_2_0_2) 
+    chooser.addOption("[2] 0_2_62", self.auto_2_0_2_62) 
+    chooser.addOption("[2] 0_2_62_51", self.auto_2_0_2_62_51) 
+    chooser.addOption("[2] 0_2_62_72", self.auto_2_0_2_62_72)
+    chooser.addOption("[2] 0_2_72", self.auto_2_0_2_72)
+    chooser.addOption("[2] 0_2_72_62", self.auto_2_0_2_72_62) 
+    chooser.addOption("[2] 0_2_1", self.auto_2_0_2_1) 
+    chooser.addOption("[2] 0_2_3", self.auto_2_0_2_3) 
+    chooser.addOption("[2] 0_2_3_62", self.auto_2_0_2_3_62) 
+
+    chooser.addOption("[3] 0_3", self.auto_3_0_3)
+    chooser.addOption("[3] 0_3_2_1", self.auto_3_0_3_2_1)
+    chooser.addOption("[3] 0_3_2_1_41", self.auto_3_0_3_2_1_41) 
+    chooser.addOption("[3] 0_3_2_1_51", self.auto_3_0_3_2_1_51) 
+    chooser.addOption("[3] 0_3_2_62", self.auto_3_0_3_2_62) 
+    chooser.addOption("[3] 0_3_62", self.auto_3_0_3_62) 
+    chooser.addOption("[3] 0_3_62_72", self.auto_3_0_3_62_72) 
+    chooser.addOption("[3] 0_3_72", self.auto_3_0_3_72) 
+    chooser.addOption("[3] 0_3_72_62", self.auto_3_0_3_72_62) 
+    chooser.addOption("[3] 0_3_73", self.auto_3_0_3_73)
+    chooser.addOption("[3] 0_3_73_83", self.auto_3_0_3_73_83)
+    chooser.addOption("[3] 0_3_82", self.auto_3_0_3_82) 
+    chooser.addOption("[3] 0_3_83", self.auto_3_0_3_83) 
+    chooser.addOption("[3] 0_3_82_62", self.auto_3_0_3_82_62) 
+    chooser.addOption("[3] 0_3_82_72", self.auto_3_0_3_82_72) 
+    chooser.addOption("[3] 0_3_83_62", self.auto_3_0_3_83_62) 
+    chooser.addOption("[3] 0_3_83_72", self.auto_3_0_3_83_72) 
+    chooser.addOption("[3] 0_3_83_73", self.auto_3_0_3_83_73)
+    chooser.addOption("[3] 0_73", self.auto_3_0_73)
+    chooser.addOption("[3] 0_83", self.auto_3_0_83)
+    chooser.addOption("[3] 0_73_83", self.auto_3_0_73_83)
+    chooser.addOption("[3] 0_83_73", self.auto_3_0_83_73)
+    chooser.addOption("[3] 0_83_72_62", self.auto_3_0_83_72_62)   
 
   def auto_0(self) -> Command:
     return cmd.sequence(

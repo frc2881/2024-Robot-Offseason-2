@@ -29,7 +29,7 @@ class RobotContainer:
     self._setupCommands()
     self._setupTriggers()
     self._setupLights()
-    utils.addRobotPeriodic(lambda: self._updateTelemetry())
+    utils.addRobotPeriodic(self._updateTelemetry)
 
   def _setupSensors(self) -> None:
     self.gyroSensor = GyroSensor_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
@@ -43,19 +43,17 @@ class RobotContainer:
     self.intakeObjectSensor = ObjectSensor(constants.Sensors.Object.Intake.kCameraName)
     
   def _setupSubsystems(self) -> None:
-    self.driveSubsystem = DriveSubsystem(
-      lambda: self.gyroSensor.getHeading()
-    )
+    self.driveSubsystem = DriveSubsystem(self.gyroSensor.getHeading)
     self.localizationSubsystem = LocalizationSubsystem(
       self.poseSensors,
-      lambda: self.gyroSensor.getRotation(),
-      lambda: self.driveSubsystem.getSwerveModulePositions()
+      self.gyroSensor.getRotation,
+      self.driveSubsystem.getSwerveModulePositions
     )
     AutoBuilder.configure(
-      lambda: self.localizationSubsystem.getPose(), 
-      lambda pose: self.localizationSubsystem.resetPose(pose), 
-      lambda: self.driveSubsystem.getSpeeds(), 
-      lambda chassisSpeeds, driveFeedfowrards: self.driveSubsystem.drive(chassisSpeeds), 
+      self.localizationSubsystem.getPose, 
+      self.localizationSubsystem.resetPose, 
+      self.driveSubsystem.getSpeeds, 
+      lambda chassisSpeeds, driveFeedforwards: self.driveSubsystem.drive(chassisSpeeds), 
       PPHolonomicDriveController(
         constants.Subsystems.Drive.kPathFollowerTranslationPIDConstants,
         constants.Subsystems.Drive.kPathFollowerRotationPIDConstants
@@ -65,8 +63,8 @@ class RobotContainer:
       self.driveSubsystem
     )
     self.intakeSubsystem = IntakeSubsystem(
-      lambda: self.launcherDistanceSensor.hasTarget(),
-      lambda: self.launcherDistanceSensor.getDistance()
+      self.launcherDistanceSensor.hasTarget,
+      self.launcherDistanceSensor.getDistance
     )
     self.launcherArmSubsystem = LauncherArmSubsystem()
     self.launcherRollersSubsystem = LauncherRollersSubsystem()
@@ -74,21 +72,21 @@ class RobotContainer:
   def _setupControllers(self) -> None:
     self.driverController = GameController(constants.Controllers.kDriverControllerPort, constants.Controllers.kInputDeadband)
     self.operatorController = GameController(constants.Controllers.kOperatorControllerPort, constants.Controllers.kInputDeadband)
-    DriverStation.silenceJoystickConnectionWarning(True)   
+    DriverStation.silenceJoystickConnectionWarning(True)
 
   def _setupCommands(self) -> None:
     self.gameCommands = GameCommands(self)
-    self.autoChooser = SendableChooser()
-    self.autoChooser.setDefaultOption("None", lambda: cmd.none())
-    SmartDashboard.putData("Robot/Auto/Command", self.autoChooser)
     self.autoCommands = AutoCommands(self)
+    self._autoCommandChooser = SendableChooser()
+    self.autoCommands.addAutoOptions(self._autoCommandChooser)
+    SmartDashboard.putData("Robot/Auto/Command", self._autoCommandChooser)
 
   def _setupTriggers(self) -> None:
     self.driveSubsystem.setDefaultCommand(
       self.driveSubsystem.driveCommand(
-        lambda: self.driverController.getLeftY(),
-        lambda: self.driverController.getLeftX(),
-        lambda: self.driverController.getRightX()
+        self.driverController.getLeftY,
+        self.driverController.getLeftX,
+        self.driverController.getRightX
     ))
     self.driverController.rightTrigger().and_((
         self.driverController.leftTrigger().or_(
@@ -152,7 +150,7 @@ class RobotContainer:
     
   def _setupLights(self) -> None:
     self.lightsController = LightsController()
-    utils.addRobotPeriodic(lambda: self._updateLights())
+    utils.addRobotPeriodic(self._updateLights)
 
   def _updateLights(self) -> None:
     lightsMode = LightsMode.Default
@@ -178,7 +176,7 @@ class RobotContainer:
     SmartDashboard.putBoolean("Robot/HasInitialZeroResets", self._robotHasInitialZeroResets())
 
   def getAutoCommand(self) -> Command:
-    return self.autoChooser.getSelected()()
+    return self._autoCommandChooser.getSelected()()
 
   def autoInit(self) -> None:
     self.resetRobot()
