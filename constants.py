@@ -4,14 +4,16 @@ from wpimath.geometry import Transform3d, Translation3d, Rotation3d, Pose3d, Tra
 from wpimath.kinematics import SwerveDrive4Kinematics
 from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 from navx import AHRS
-from photonlibpy.photonPoseEstimator import PoseStrategy
+from pathplannerlib.config import RobotConfig
 from pathplannerlib.controller import PIDConstants as PathPlannerPIDConstants
 from pathplannerlib.pathfinding import PathConstraints
+from photonlibpy.photonPoseEstimator import PoseStrategy
 from lib import logger, utils
 from lib.classes import PIDConstants, MotorControllerType, ChassisLocation, SwerveModuleConfig, PoseSensorConfig
 from classes import LauncherRollersSpeeds, LauncherArmPositionTarget
 
 APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
+PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
 
 class Subsystems:
   class Drive:
@@ -34,6 +36,7 @@ class Subsystems:
     kTargetAlignmentCarpetFrictionCoeff: float = 0.2
     kTargetAlignmentHeadingInversion: units.degrees = 180.0
 
+    kPathPlannerRobotConfig = PATHPLANNER_ROBOT_CONFIG
     kPathFollowerTranslationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFollowerRotationPIDConstants = PathPlannerPIDConstants(5.0, 0, 0)
     kPathFindingConstraints = PathConstraints(4.2, 3.6, units.degreesToRadians(540), units.degreesToRadians(720))
