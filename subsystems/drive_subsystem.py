@@ -10,7 +10,7 @@ from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, SwerveModule
 from pathplannerlib.util import DriveFeedforwards
 from pathplannerlib.util.swerve import SwerveSetpoint, SwerveSetpointGenerator
 from lib import utils, logger
-from lib.classes import ChassisLocation, MotorIdleMode, SpeedMode, DriveOrientation, OptionState, LockState
+from lib.classes import MotorIdleMode, SpeedMode, DriveOrientation, OptionState, LockState
 from lib.components.swerve_module import SwerveModule
 import constants
 
@@ -171,10 +171,8 @@ class DriveSubsystem(Subsystem):
   def _setLockState(self, lockState: LockState) -> None:
     self._lockState = lockState
     if lockState == LockState.Locked:
-      self._swerveModules[ChassisLocation.FrontLeft.value].setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
-      self._swerveModules[ChassisLocation.FrontRight.value].setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
-      self._swerveModules[ChassisLocation.RearLeft.value].setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
-      self._swerveModules[ChassisLocation.RearRight.value].setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
+      for i, m in enumerate(self._swerveModules): 
+        m.setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(45 if i in { 0, 3 } else -45)))
 
   def alignToTargetCommand(self, getRobotPose: Callable[[], Pose2d], getTargetHeading: Callable[[], units.degrees]) -> Command:
     return self.run(

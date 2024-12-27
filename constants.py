@@ -9,7 +9,7 @@ from pathplannerlib.controller import PIDConstants as PathPlannerPIDConstants
 from pathplannerlib.pathfinding import PathConstraints
 from photonlibpy.photonPoseEstimator import PoseStrategy
 from lib import logger, utils
-from lib.classes import PIDConstants, MotorControllerType, ChassisLocation, SwerveModuleConfig, PoseSensorConfig
+from lib.classes import PIDConstants, MotorControllerType, SwerveModuleConfig, SwerveModuleLocation, PoseSensorConfig, PoseSensorLocation
 from classes import LauncherRollersSpeeds, LauncherArmPositionTarget
 
 APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
@@ -42,10 +42,10 @@ class Subsystems:
     kPathFindingConstraints = PathConstraints(4.2, 3.6, units.degreesToRadians(540), units.degreesToRadians(720))
 
     kSwerveModuleConfigs: tuple[SwerveModuleConfig, ...] = (
-      SwerveModuleConfig(ChassisLocation.FrontLeft, 3, 4, -math.pi / 2, Translation2d(kWheelBase / 2, kTrackWidth / 2)),
-      SwerveModuleConfig(ChassisLocation.FrontRight, 7, 8, 0, Translation2d(kWheelBase / 2, -kTrackWidth / 2)),
-      SwerveModuleConfig(ChassisLocation.RearLeft, 5, 6, math.pi, Translation2d(-kWheelBase / 2, kTrackWidth / 2)),
-      SwerveModuleConfig(ChassisLocation.RearRight, 9, 10, math.pi / 2, Translation2d(-kWheelBase / 2, -kTrackWidth / 2))
+      SwerveModuleConfig(SwerveModuleLocation.FrontLeft, 3, 4, -math.pi / 2, Translation2d(kWheelBase / 2, kTrackWidth / 2)),
+      SwerveModuleConfig(SwerveModuleLocation.FrontRight, 7, 8, 0, Translation2d(kWheelBase / 2, -kTrackWidth / 2)),
+      SwerveModuleConfig(SwerveModuleLocation.RearLeft, 5, 6, math.pi, Translation2d(-kWheelBase / 2, kTrackWidth / 2)),
+      SwerveModuleConfig(SwerveModuleLocation.RearRight, 9, 10, math.pi / 2, Translation2d(-kWheelBase / 2, -kTrackWidth / 2))
     )
 
     kSwerveDriveKinematics = SwerveDrive4Kinematics(*(c.translation for c in kSwerveModuleConfigs))
@@ -173,28 +173,28 @@ class Sensors:
 
     kPoseSensorConfigs: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
-        ChassisLocation.Rear.name,
-        Transform3d(
-          Translation3d(units.inchesToMeters(5.49), units.inchesToMeters(0.0), units.inchesToMeters(20.60)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.2), units.degreesToRadians(-180.0))
-        ), kPoseStrategy, kFallbackPoseStrategy, APRIL_TAG_FIELD_LAYOUT
-      ),
-      PoseSensorConfig(
-        ChassisLocation.Front.name,
+        PoseSensorLocation.Front,
         Transform3d(
           Translation3d(units.inchesToMeters(9.62), units.inchesToMeters(4.12), units.inchesToMeters(21.25)),
           Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-22.3), units.degreesToRadians(0.0))
         ), kPoseStrategy, kFallbackPoseStrategy, APRIL_TAG_FIELD_LAYOUT
       ),
       PoseSensorConfig(
-        ChassisLocation.Left.name,
+        PoseSensorLocation.Rear,
+        Transform3d(
+          Translation3d(units.inchesToMeters(5.49), units.inchesToMeters(0.0), units.inchesToMeters(20.60)),
+          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-23.2), units.degreesToRadians(-180.0))
+        ), kPoseStrategy, kFallbackPoseStrategy, APRIL_TAG_FIELD_LAYOUT
+      ),
+      PoseSensorConfig(
+        PoseSensorLocation.Left,
         Transform3d(
           Translation3d(units.inchesToMeters(8.24), units.inchesToMeters(12.40), units.inchesToMeters(17.25)),
           Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-29.4), units.degreesToRadians(90.0))
         ), kPoseStrategy, kFallbackPoseStrategy, APRIL_TAG_FIELD_LAYOUT
       ),
       PoseSensorConfig(
-        ChassisLocation.Right.name,
+        PoseSensorLocation.Right,
         Transform3d(
           Translation3d(units.inchesToMeters(8.16), units.inchesToMeters(-12.375), units.inchesToMeters(17.25)),
           Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-21.2), units.degreesToRadians(-90.0))
