@@ -2,7 +2,7 @@ from commands2 import Subsystem, Command
 from wpilib import SendableChooser, SmartDashboard
 from wpimath import units
 from rev import SparkBase, SparkBaseConfig, SparkLowLevel, SparkFlex, SparkRelativeEncoder
-from lib import utils, logger
+from lib import logger, utils
 from lib.classes import SpeedMode
 from classes import LauncherRollersSpeeds
 import constants

@@ -3,7 +3,7 @@ from wpilib import SmartDashboard
 from wpimath import units
 from commands2 import Subsystem, Command, cmd
 from rev import SparkBase, SparkBaseConfig, SparkLowLevel, SparkMax
-from lib import utils, logger
+from lib import logger, utils
 from lib.classes import MotorDirection
 import constants
 

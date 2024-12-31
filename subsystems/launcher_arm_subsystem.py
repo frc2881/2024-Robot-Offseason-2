@@ -4,7 +4,7 @@ from wpilib import SmartDashboard
 from wpimath import units
 from commands2 import Subsystem, Command
 from rev import SparkBase, SparkBaseConfig, SparkLowLevel, SparkFlex, ClosedLoopConfig
-from lib import utils, logger
+from lib import logger, utils
 import constants
 
 class LauncherArmSubsystem(Subsystem):
