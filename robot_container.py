@@ -1,6 +1,7 @@
 from commands2 import Command, cmd
-from wpilib import DriverStation, SendableChooser, SmartDashboard
+from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
+from lib.classes import RobotState
 from lib.controllers.game_controller import GameController
 from lib.controllers.lights_controller import LightsController
 from lib.sensors.distance_sensor import DistanceSensor
@@ -41,7 +42,6 @@ class RobotContainer:
   def _setupSubsystems(self) -> None:
     self.driveSubsystem = DriveSubsystem(self.gyroSensor.getHeading)
     self.localizationSubsystem = LocalizationSubsystem(self.poseSensors, self.gyroSensor.getRotation, self.driveSubsystem.getModulePositions)
-
     self.intakeSubsystem = IntakeSubsystem(
       self.launcherDistanceSensor.hasTarget,
       self.launcherDistanceSensor.getDistance
@@ -100,7 +100,7 @@ class RobotContainer:
 
     self.operatorController.leftY().whileTrue(
       self.launcherArmSubsystem.runCommand(
-        lambda: self.operatorController.getLeftY()
+        self.operatorController.getLeftY
     ))
     self.operatorController.rightTrigger().and_(
       self.operatorController.leftTrigger().or_(
