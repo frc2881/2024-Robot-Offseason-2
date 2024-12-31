@@ -2,8 +2,8 @@ from typing import Callable
 from wpilib import SmartDashboard
 from wpimath import units
 from commands2 import Subsystem, Command, cmd
-from rev import CANSparkBase, CANSparkLowLevel, CANSparkMax
-from lib import utils, logger
+from rev import SparkBase, SparkBaseConfig, SparkLowLevel, SparkMax
+from lib import logger, utils
 from lib.classes import MotorDirection
 import constants
 
@@ -19,27 +19,49 @@ class IntakeSubsystem(Subsystem):
 
     self._constants = constants.Subsystems.Intake
 
-    self._rollersMotor = CANSparkMax(self._constants.kRollerMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
-    utils.validateParam(self._rollersMotor.restoreFactoryDefaults())
-    utils.validateParam(self._rollersMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
-    utils.validateParam(self._rollersMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
-    utils.validateParam(self._rollersMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
-    utils.validateParam(self._rollersMotor.burnFlash())
+    self._rollersMotor = SparkMax(self._constants.kRollerMotorCANId, SparkLowLevel.MotorType.kBrushless)
+    self._rollersMotorConfig = SparkBaseConfig()
+    (self._rollersMotorConfig
+      .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
+      .smartCurrentLimit(self._constants.kMotorCurrentLimit)
+      .secondaryCurrentLimit(self._constants.kMotorCurrentLimit))
+    utils.setSparkConfig(
+      self._rollersMotor.configure(
+        self._rollersMotorConfig,
+        SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters
+      )
+    )
 
-    self._topMotor = CANSparkMax(self._constants.kTopMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
-    utils.validateParam(self._topMotor.restoreFactoryDefaults())
-    utils.validateParam(self._topMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
-    utils.validateParam(self._topMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
-    utils.validateParam(self._topMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
-    utils.validateParam(self._topMotor.burnFlash())
+    self._bottomMotor = SparkMax(self._constants.kBottomMotorCANId, SparkLowLevel.MotorType.kBrushless)
+    self._bottomMotorConfig = SparkBaseConfig()
+    (self._bottomMotorConfig
+      .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
+      .smartCurrentLimit(self._constants.kMotorCurrentLimit)
+      .secondaryCurrentLimit(self._constants.kMotorCurrentLimit)
+      .inverted(True))
+    utils.setSparkConfig(
+      self._bottomMotor.configure(
+        self._bottomMotorConfig,
+        SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters
+      )
+    )
 
-    self._bottomMotor = CANSparkMax(self._constants.kBottomMotorCANId, CANSparkLowLevel.MotorType.kBrushless)
-    utils.validateParam(self._bottomMotor.restoreFactoryDefaults())
-    utils.validateParam(self._bottomMotor.setIdleMode(CANSparkBase.IdleMode.kBrake))
-    utils.validateParam(self._bottomMotor.setSmartCurrentLimit(self._constants.kMotorCurrentLimit))
-    utils.validateParam(self._bottomMotor.setSecondaryCurrentLimit(self._constants.kMotorCurrentLimit))
-    self._bottomMotor.setInverted(True)
-    utils.validateParam(self._bottomMotor.burnFlash())
+    self._topMotor = SparkMax(self._constants.kTopMotorCANId, SparkLowLevel.MotorType.kBrushless)
+    self._topMotorConfig = SparkBaseConfig()
+    (self._topMotorConfig
+      .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
+      .smartCurrentLimit(self._constants.kMotorCurrentLimit)
+      .secondaryCurrentLimit(self._constants.kMotorCurrentLimit)
+      .inverted(False))
+    utils.setSparkConfig(
+      self._topMotor.configure(
+        self._topMotorConfig,
+        SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters
+      )
+    )
 
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -133,9 +155,9 @@ class IntakeSubsystem(Subsystem):
     return self._getLauncherHasTarget() and utils.isValueInRange(self._getLauncherDistance(), self._constants.kDistanceLauncherReadyMin, self._constants.kDistanceLauncherReadyMax)
   
   def reset(self) -> None:
-    self._rollersMotor.set(0)
-    self._topMotor.set(0)
-    self._bottomMotor.set(0)
+    self._rollersMotor.stopMotor()
+    self._topMotor.stopMotor()
+    self._bottomMotor.stopMotor()
     
   def _updateTelemetry(self) -> None:
     SmartDashboard.putNumber("Robot/Intake/Speed", self._topMotor.get())
