@@ -1,4 +1,0 @@
-[submodule "lib"]
-	path = lib
-	url = https://github.com/frc2881/Robot-Lib.git
-	branch = main
