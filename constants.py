@@ -98,13 +98,16 @@ class Subsystems:
       kRightMotorCANId: int = 14
       kLeftMotorCANId: int = 15
 
+      _leadscrewTravelDistance: units.inches = 1.0
+      _motorReduction: float = 3.0
+
       kMotorCurrentLimit: units.amperes = 60
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorMaxReverseOutput: units.percent = -1.0
       kMotorPID = PID(0.0003, 0, 0.00015)
       kMotorForwardSoftLimit: float = 22.50
       kMotorReverseSoftLimit: float = 0
-      kMotorPositionConversionFactor: float = 1.0 / 3.0
+      kMotorPositionConversionFactor: float = _leadscrewTravelDistance / _motorReduction
       kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
       kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
       kMotorSmartMotionMaxAcceleration: float = 66.0 / kMotorVelocityConversionFactor 
