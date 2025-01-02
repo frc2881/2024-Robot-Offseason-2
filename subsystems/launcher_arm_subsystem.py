@@ -75,6 +75,7 @@ class LauncherArmSubsystem(Subsystem):
       .forwardSoftLimit(self._constants.kMotorForwardSoftLimit)
       .reverseSoftLimitEnabled(True)
       .reverseSoftLimit(self._constants.kMotorReverseSoftLimit))
+    self._armRightMotorConfig.follow(self._constants.kLeftMotorCANId)
     utils.setSparkConfig(
       self._armRightMotor.configure(
         self._armRightMotorConfig,
