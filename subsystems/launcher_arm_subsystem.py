@@ -32,7 +32,6 @@ class LauncherArmSubsystem(Subsystem):
     (self._armLeftMotorConfig.closedLoop
       .setFeedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
       .pid(*self._constants.kMotorPID)
-      .velocityFF(self._constants.kMotorVelocityFeedForward)
       .outputRange(self._constants.kMotorMaxReverseOutput, self._constants.kMotorMaxForwardOutput)
       .smartMotion
         .maxVelocity(self._constants.kMotorSmartMotionMaxVelocity)
@@ -65,7 +64,6 @@ class LauncherArmSubsystem(Subsystem):
     (self._armRightMotorConfig.closedLoop
       .setFeedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
       .pid(*self._constants.kMotorPID)
-      .velocityFF(self._constants.kMotorVelocityFeedForward)
       .outputRange(self._constants.kMotorMaxReverseOutput, self._constants.kMotorMaxForwardOutput)
       .smartMotion
         .maxVelocity(self._constants.kMotorSmartMotionMaxVelocity)

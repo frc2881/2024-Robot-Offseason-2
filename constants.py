@@ -102,7 +102,6 @@ class Subsystems:
       kMotorMaxForwardOutput: units.percent = 1.0
       kMotorMaxReverseOutput: units.percent = -1.0
       kMotorPID = PID(0.0003, 0, 0.00015)
-      kMotorVelocityFeedForward: float = 1 / 565
       kMotorForwardSoftLimit: float = 22.50
       kMotorReverseSoftLimit: float = 0
       kMotorPositionConversionFactor: float = 1.0 / 3.0
