@@ -144,7 +144,7 @@ class RobotContainer:
           else:
             if self.driveSubsystem.isAlignedToTarget() and self.launcherArmSubsystem.isAlignedToTarget():
               lightsMode = LightsMode.LaunchReady
-    self.lightsController.setLightsMode(lightsMode)
+    self.lightsController.setLightsMode(lightsMode.name)
 
   def _robotHasInitialZeroResets(self) -> bool:
     return utils.isCompetitionMode() or self.launcherArmSubsystem.hasInitialZeroReset()
