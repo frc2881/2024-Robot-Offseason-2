@@ -143,10 +143,13 @@ class IntakeSubsystem(Subsystem):
     self._bottomMotor.set(self._getSpeed(speed, bottom))
 
   def _getSpeed(self, speed: units.percent, motorDirection: MotorDirection) -> units.percent:
-    if motorDirection != MotorDirection.Stopped:
-      return speed * (self._constants.kMotorMaxReverseOutput if motorDirection == MotorDirection.Reverse else self._constants.kMotorMaxForwardOutput)
-    else:
-      return 0
+    match motorDirection:
+      case MotorDirection.Forward:
+        return speed
+      case MotorDirection.Reverse:
+        return -speed
+      case MotorDirection.Stopped:
+        return 0
 
   def isLoaded(self) -> bool:
     return self._getLauncherHasTarget() and self._getLauncherDistance() <= self._constants.kDistanceLauncherReadyMax

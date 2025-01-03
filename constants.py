@@ -77,8 +77,6 @@ class Subsystems:
     kBottomMotorCANId: int = 13
 
     kMotorCurrentLimit: units.amperes = 60
-    kMotorMaxForwardOutput: units.percent = 1.0
-    kMotorMaxReverseOutput: units.percent = -1.0
 
     kSpeedIntake: units.percent = 0.8
     kSpeedAlign: units.percent = 0.1
@@ -102,8 +100,6 @@ class Subsystems:
       _motorReduction: float = 3.0
 
       kMotorCurrentLimit: units.amperes = 60
-      kMotorMaxForwardOutput: units.percent = 1.0
-      kMotorMaxReverseOutput: units.percent = -1.0
       kMotorPID = PID(0.0003, 0, 0.00015)
       kMotorForwardSoftLimit: float = 22.50
       kMotorReverseSoftLimit: float = 0
@@ -147,8 +143,6 @@ class Subsystems:
 
       kMotorFreeSpeed: units.revolutions_per_minute = 6784
       kMotorCurrentLimit: units.amperes = 120
-      kMotorMaxForwardOutput: units.percent = 1.0
-      kMotorMaxReverseOutput: units.percent = -1.0
 
       kSpeedsDefault = LauncherRollersSpeeds(1.0, 1.0)
       kSpeedsShuttle = LauncherRollersSpeeds(0.65, 0.65)

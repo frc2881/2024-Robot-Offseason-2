@@ -61,8 +61,8 @@ class LauncherRollersSubsystem(Subsystem):
   def runCommand(self, rollersSpeeds: LauncherRollersSpeeds) -> Command:
     return self.run(
       lambda: [
-        self._bottomMotor.set((self._constants.kSpeedsDemo.bottom if self._speedMode == SpeedMode.Demo else rollersSpeeds.bottom) * self._constants.kMotorMaxForwardOutput),
-        self._topMotor.set((self._constants.kSpeedsDemo.top if self._speedMode == SpeedMode.Demo else rollersSpeeds.top) * self._constants.kMotorMaxForwardOutput),
+        self._bottomMotor.set(self._constants.kSpeedsDemo.bottom if self._speedMode == SpeedMode.Demo else rollersSpeeds.bottom),
+        self._topMotor.set(self._constants.kSpeedsDemo.top if self._speedMode == SpeedMode.Demo else rollersSpeeds.top),
         self._updateMotorSpeedDeltas()
       ]
     ).finallyDo(
