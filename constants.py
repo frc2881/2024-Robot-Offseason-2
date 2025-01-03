@@ -9,7 +9,7 @@ from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 from pathplannerlib.pathfinding import PathConstraints
 from photonlibpy.photonPoseEstimator import PoseStrategy
 from lib import logger, utils
-from lib.classes import PID, MotorControllerType, SwerveModuleConstants, SwerveModuleConfig, SwerveModuleLocation, PoseSensorConfig, PoseSensorLocation
+from lib.classes import PID, MotorControllerType, SwerveModuleConstants, SwerveModuleConfig, SwerveModuleLocation, PoseSensorConfig, PoseSensorLocation, LeadscrewModuleConstants, LeadscrewModuleConfig
 from classes import LauncherRollersSpeeds, LauncherArmPositionTarget
 
 APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout().loadField(AprilTagField.k2024Crescendo)
@@ -93,26 +93,22 @@ class Subsystems:
 
   class Launcher:
     class Arm:
-      kRightMotorCANId: int = 14
-      kLeftMotorCANId: int = 15
+      _leadscrewModuleConstants = LeadscrewModuleConstants(
+        leadscrewTravelDistance = 1.0,
+        motorControllerType = MotorControllerType.SparkFlex,
+        motorCurrentLimit = 60,
+        motorReduction = 3.0,
+        motorPID = PID(0.0003, 0, 0.00015),
+        motorSmartMotionMaxVelocityRate = 33.0,
+        motorSmartMotionMaxAccelerationRate = 66.0,
+        motorSoftLimitForward = 22.50,
+        motorSoftLimitReverse = 0,
+        motorResetSpeed = 0.1
+      )
 
-      _leadscrewTravelDistance: units.inches = 1.0
-      _motorReduction: float = 3.0
-
-      kMotorCurrentLimit: units.amperes = 60
-      kMotorPID = PID(0.0003, 0, 0.00015)
-      kMotorForwardSoftLimit: float = 22.50
-      kMotorReverseSoftLimit: float = 0
-      kMotorPositionConversionFactor: float = _leadscrewTravelDistance / _motorReduction
-      kMotorVelocityConversionFactor: float = kMotorPositionConversionFactor / 60.0
-      kMotorSmartMotionMaxVelocity: float = (33.0 / kMotorPositionConversionFactor) * 60
-      kMotorSmartMotionMaxAcceleration: float = 66.0 / kMotorVelocityConversionFactor 
-
-      kInputLimit: units.percent = 0.5
-      kResetSpeed: units.percent = 0.1
-
-      kTargetAlignmentPositionTolerance: float = 0.05
-
+      kLeadScrewModuleConfigLeft = LeadscrewModuleConfig("Launcher/Arm/Leadscrews/Left", 15, _leadscrewModuleConstants)
+      kLeadScrewModuleConfigRight = LeadscrewModuleConfig("Launcher/Arm/Leadscrews/Right", 14, _leadscrewModuleConstants)
+      
       kPositionIntake: float = 0.05
       kPositionSubwoofer: float = 6.90
       kPositionPodium: float = 2.30
@@ -120,7 +116,6 @@ class Subsystems:
       kPositionShuttle: float = 4.00
       kPositionClimbUp: float = 22.50
       kPositionClimbDown: float = 4.40
-
       kPositionTargets: tuple[LauncherArmPositionTarget, ...] = (
         LauncherArmPositionTarget(0.00, 7.20),
         LauncherArmPositionTarget(0.50, 7.00),
@@ -136,6 +131,10 @@ class Subsystems:
         LauncherArmPositionTarget(7.00, 0.30),
         LauncherArmPositionTarget(8.00, 0.05)
       )
+
+      kTargetAlignmentPositionTolerance: float = 0.05
+
+      kInputLimit: units.percent = 0.5
 
     class Rollers:
       kBottomMotorCANId: int = 16

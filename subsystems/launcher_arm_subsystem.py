@@ -3,8 +3,8 @@ import math
 from wpilib import SmartDashboard
 from wpimath import units
 from commands2 import Subsystem, Command
-from rev import SparkBase, SparkBaseConfig, SparkLowLevel, SparkFlex, ClosedLoopConfig
 from lib import logger, utils
+from lib.components.leadscrew_module import LeadscrewModule
 import constants
 
 class LauncherArmSubsystem(Subsystem):
@@ -20,79 +20,15 @@ class LauncherArmSubsystem(Subsystem):
     
     SmartDashboard.putString("Robot/Launcher/Arm/Positions", utils.toJson(self._constants.kPositionTargets))
 
-    self._armLeftMotor = SparkFlex(self._constants.kLeftMotorCANId, SparkLowLevel.MotorType.kBrushless)
-    self._armLeftMotorConfig = SparkBaseConfig()
-    (self._armLeftMotorConfig
-      .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
-      .smartCurrentLimit(self._constants.kMotorCurrentLimit)
-      .secondaryCurrentLimit(self._constants.kMotorCurrentLimit))
-    (self._armLeftMotorConfig.encoder
-      .positionConversionFactor(self._constants.kMotorPositionConversionFactor)
-      .velocityConversionFactor(self._constants.kMotorVelocityConversionFactor))
-    (self._armLeftMotorConfig.closedLoop
-      .setFeedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
-      .pid(*self._constants.kMotorPID)
-      .outputRange(-1.0, 1.0)
-      .smartMotion
-        .maxVelocity(self._constants.kMotorSmartMotionMaxVelocity)
-        .maxAcceleration(self._constants.kMotorSmartMotionMaxAcceleration))
-    (self._armLeftMotorConfig.softLimit
-      .forwardSoftLimitEnabled(True)
-      .forwardSoftLimit(self._constants.kMotorForwardSoftLimit)
-      .reverseSoftLimitEnabled(True)
-      .reverseSoftLimit(self._constants.kMotorReverseSoftLimit))
-    utils.setSparkConfig(
-      self._armLeftMotor.configure(
-        self._armLeftMotorConfig,
-        SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters
-      )
-    )
-    self._armLeftClosedLoopController = self._armLeftMotor.getClosedLoopController()    
-    self._armLeftEncoder = self._armLeftMotor.getEncoder()
-    self._armLeftEncoder.setPosition(0)
-
-    self._armRightMotor = SparkFlex(self._constants.kRightMotorCANId, SparkLowLevel.MotorType.kBrushless)
-    self._armRightMotorConfig = SparkBaseConfig()
-    (self._armRightMotorConfig
-      .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
-      .smartCurrentLimit(self._constants.kMotorCurrentLimit)
-      .secondaryCurrentLimit(self._constants.kMotorCurrentLimit))
-    (self._armRightMotorConfig.encoder
-      .positionConversionFactor(self._constants.kMotorPositionConversionFactor)
-      .velocityConversionFactor(self._constants.kMotorVelocityConversionFactor))
-    (self._armRightMotorConfig.closedLoop
-      .setFeedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
-      .pid(*self._constants.kMotorPID)
-      .outputRange(-1.0, 1.0)
-      .smartMotion
-        .maxVelocity(self._constants.kMotorSmartMotionMaxVelocity)
-        .maxAcceleration(self._constants.kMotorSmartMotionMaxAcceleration))
-    (self._armRightMotorConfig.softLimit
-      .forwardSoftLimitEnabled(True)
-      .forwardSoftLimit(self._constants.kMotorForwardSoftLimit)
-      .reverseSoftLimitEnabled(True)
-      .reverseSoftLimit(self._constants.kMotorReverseSoftLimit))
-    self._armRightMotorConfig.follow(self._constants.kLeftMotorCANId)
-    utils.setSparkConfig(
-      self._armRightMotor.configure(
-        self._armRightMotorConfig,
-        SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters
-      )
-    )
-    self._armRightClosedLoopController = self._armRightMotor.getClosedLoopController()    
-    self._armRightEncoder = self._armRightMotor.getEncoder()
-    self._armRightEncoder.setPosition(0)
+    self._leadscrewModuleLeft = LeadscrewModule(self._constants.kLeadScrewModuleConfigLeft)
+    self._leadscrewModuleRight = LeadscrewModule(self._constants.kLeadScrewModuleConfigRight)
 
   def periodic(self) -> None:
     self._updateTelemetry()
   
   def runCommand(self, getInput: Callable[[], units.percent]) -> Command:
     return self.run(
-      lambda: [
-        self._armLeftMotor.set(getInput() * self._constants.kInputLimit)
-      ]
+      lambda: self._setSpeed(getInput() * self._constants.kInputLimit)
     ).beforeStarting(
       lambda: self.clearTargetAlignment()
     ).finallyDo(
@@ -102,7 +38,7 @@ class LauncherArmSubsystem(Subsystem):
   def alignToPositionCommand(self, position: float) -> Command:
     return self.run(
       lambda: [
-        self._armLeftClosedLoopController.setReference(position, SparkBase.ControlType.kSmartMotion),
+        self._setPosition(position),
         self._setIsAlignedToTarget(position)
       ]
     ).beforeStarting(
@@ -115,7 +51,7 @@ class LauncherArmSubsystem(Subsystem):
     return self.run(
       lambda: [
         position := self._getTargetPosition(getTargetDistance()),
-        self._armLeftClosedLoopController.setReference(position, SparkBase.ControlType.kSmartMotion),
+        self._setPosition(position),
         self._setIsAlignedToTarget(position)
       ]
     ).beforeStarting(
@@ -124,19 +60,26 @@ class LauncherArmSubsystem(Subsystem):
       lambda end: self._alignToIntake()
     ).withName("LauncherArmSubsystem:AlignToTarget")
 
+  def _setSpeed(self, speed: units.percent) -> None:
+    self._leadscrewModuleLeft.setSpeed(speed),
+    self._leadscrewModuleRight.setSpeed(speed)
+
+  def _setPosition(self, position: float) -> None:
+    self._leadscrewModuleLeft.setPosition(position)
+    self._leadscrewModuleRight.setPosition(position)
+
+  def _getPosition(self) -> float:
+    return self._leadscrewModuleLeft.getPosition()
+
   def _alignToIntake(self) -> Command:
-    self._armLeftClosedLoopController.setReference(self._constants.kPositionIntake, SparkBase.ControlType.kSmartMotion),
+    self._setPosition(self._constants.kPositionIntake)
     self.clearTargetAlignment()
 
   def _getTargetPosition(self, targetDistance: units.meters) -> float:
-    targetPosition = utils.getInterpolatedValue(targetDistance, self._targetDistances, self._targetPositions)
-    if utils.isValueInRange(targetPosition, self._constants.kMotorReverseSoftLimit, self._constants.kMotorForwardSoftLimit):
-      return targetPosition
-    else:
-      return self._constants.kPositionSubwoofer
+    return utils.getInterpolatedValue(targetDistance, self._targetDistances, self._targetPositions)
 
   def _setIsAlignedToTarget(self, position: float) -> None:
-    self._isAlignedToTarget = math.fabs(self._armRightEncoder.getPosition() - position) <= self._constants.kTargetAlignmentPositionTolerance
+    self._isAlignedToTarget = math.fabs(self._getPosition() - position) <= self._constants.kTargetAlignmentPositionTolerance
 
   def isAlignedToTarget(self) -> bool:
     return self._isAlignedToTarget
@@ -147,18 +90,12 @@ class LauncherArmSubsystem(Subsystem):
   def resetToZeroCommand(self) -> Command:
     return self.startEnd(
       lambda: [
-        utils.setSparkSoftLimitsEnabled(self._armLeftMotor, False),
-        utils.setSparkSoftLimitsEnabled(self._armRightMotor, False),
-        self._armLeftMotor.set(-self._constants.kResetSpeed),
-        self._armRightMotor.set(-self._constants.kResetSpeed)
+        self._leadscrewModuleLeft.startZeroReset(),
+        self._leadscrewModuleRight.startZeroReset()
       ],
       lambda: [
-        self._armLeftMotor.stopMotor(),
-        self._armRightMotor.stopMotor(),
-        self._armLeftEncoder.setPosition(0),
-        self._armRightEncoder.setPosition(0),
-        utils.setSparkSoftLimitsEnabled(self._armLeftMotor, True),
-        utils.setSparkSoftLimitsEnabled(self._armRightMotor, True),
+        self._leadscrewModuleLeft.endZeroReset(),
+        self._leadscrewModuleRight.endZeroReset(),
         setattr(self, "_hasInitialZeroReset", True)
       ]
     ).withName("LauncherArmSubsystem:ResetToZero")
@@ -167,10 +104,10 @@ class LauncherArmSubsystem(Subsystem):
     return self._hasInitialZeroReset
 
   def reset(self) -> None:
-    self._armLeftMotor.stopMotor()
-    self._armRightMotor.stopMotor()
+    self._leadscrewModuleLeft.reset()
+    self._leadscrewModuleRight.reset()
     self.clearTargetAlignment()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putNumber("Robot/Launcher/Arm/Position", self._armLeftEncoder.getPosition())
+    SmartDashboard.putNumber("Robot/Launcher/Arm/Position", self._getPosition())
     SmartDashboard.putBoolean("Robot/Launcher/Arm/IsAlignedToTarget", self._isAlignedToTarget)
