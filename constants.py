@@ -38,10 +38,10 @@ class Subsystems:
     )
 
     kSwerveModuleConfigs: tuple[SwerveModuleConfig, ...] = (
-      SwerveModuleConfig(SwerveModuleLocation.FrontLeft, 3, 4, -math.pi / 2, Translation2d(kWheelBase / 2, kTrackWidth / 2), _swerveModuleConstants),
-      SwerveModuleConfig(SwerveModuleLocation.FrontRight, 7, 8, 0, Translation2d(kWheelBase / 2, -kTrackWidth / 2), _swerveModuleConstants),
-      SwerveModuleConfig(SwerveModuleLocation.RearLeft, 5, 6, math.pi, Translation2d(-kWheelBase / 2, kTrackWidth / 2), _swerveModuleConstants),
-      SwerveModuleConfig(SwerveModuleLocation.RearRight, 9, 10, math.pi / 2, Translation2d(-kWheelBase / 2, -kTrackWidth / 2), _swerveModuleConstants)
+      SwerveModuleConfig(SwerveModuleLocation.FrontLeft, 2, 3, -math.pi / 2, Translation2d(kWheelBase / 2, kTrackWidth / 2), _swerveModuleConstants),
+      SwerveModuleConfig(SwerveModuleLocation.FrontRight, 4, 5, 0, Translation2d(kWheelBase / 2, -kTrackWidth / 2), _swerveModuleConstants),
+      SwerveModuleConfig(SwerveModuleLocation.RearLeft, 6, 7, math.pi, Translation2d(-kWheelBase / 2, kTrackWidth / 2), _swerveModuleConstants),
+      SwerveModuleConfig(SwerveModuleLocation.RearRight, 8, 9, math.pi / 2, Translation2d(-kWheelBase / 2, -kTrackWidth / 2), _swerveModuleConstants)
     )
 
     kDriveKinematics = SwerveDrive4Kinematics(*(c.translation for c in kSwerveModuleConfigs))
