@@ -99,8 +99,8 @@ class Subsystems:
         motorCurrentLimit = 60,
         motorReduction = 3.0,
         motorPID = PID(0.0003, 0, 0.00015),
-        motorSmartMotionMaxVelocityRate = 33.0,
-        motorSmartMotionMaxAccelerationRate = 66.0,
+        motorMotionMaxVelocityRate = 33.0,
+        motorMotionMaxAccelerationRate = 66.0,
         motorSoftLimitForward = 22.50,
         motorSoftLimitReverse = 0,
         motorResetSpeed = 0.1
