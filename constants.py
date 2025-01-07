@@ -98,9 +98,10 @@ class Subsystems:
         motorControllerType = MotorControllerType.SparkFlex,
         motorCurrentLimit = 60,
         motorReduction = 3.0,
-        motorPID = PID(0.0003, 0, 0.00015),
+        motorPID = PID(0.1, 0, 0.01),
         motorMotionMaxVelocityRate = 33.0,
         motorMotionMaxAccelerationRate = 66.0,
+        allowClosedLoopError = 0.1,
         motorSoftLimitForward = 22.50,
         motorSoftLimitReverse = 0,
         motorResetSpeed = 0.1
