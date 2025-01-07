@@ -101,6 +101,7 @@ class Subsystems:
         motorPID = PID(0.1, 0, 0.01),
         motorMotionMaxVelocityRate = 33.0,
         motorMotionMaxAccelerationRate = 66.0,
+        allowedClosedLoopError = 0.1,
         allowClosedLoopError = 0.1,
         motorSoftLimitForward = 22.50,
         motorSoftLimitReverse = 0,
