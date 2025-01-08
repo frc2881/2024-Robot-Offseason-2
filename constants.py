@@ -102,14 +102,13 @@ class Subsystems:
         motorMotionMaxVelocityRate = 33.0,
         motorMotionMaxAccelerationRate = 66.0,
         allowedClosedLoopError = 0.1,
-        allowClosedLoopError = 0.1,
         motorSoftLimitForward = 22.50,
         motorSoftLimitReverse = 0,
         motorResetSpeed = 0.1
       )
 
-      kLeadScrewModuleConfigLeft = LeadscrewModuleConfig("Launcher/Arm/Leadscrews/Left", 15, _leadscrewModuleConstants)
-      kLeadScrewModuleConfigRight = LeadscrewModuleConfig("Launcher/Arm/Leadscrews/Right", 14, _leadscrewModuleConstants)
+      kLeadScrewModuleConfigRight = LeadscrewModuleConfig("Launcher/Arm/Leadscrews/Right", 14, 15, _leadscrewModuleConstants)
+      kLeadScrewModuleConfigLeft = LeadscrewModuleConfig("Launcher/Arm/Leadscrews/Left", 15, None, _leadscrewModuleConstants)
       
       kPositionIntake: float = 0.05
       kPositionSubwoofer: float = 6.90

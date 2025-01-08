@@ -62,11 +62,9 @@ class LauncherArmSubsystem(Subsystem):
 
   def _setSpeed(self, speed: units.percent) -> None:
     self._leadscrewModuleLeft.setSpeed(speed),
-    self._leadscrewModuleRight.setSpeed(speed)
 
   def _setPosition(self, position: float) -> None:
     self._leadscrewModuleLeft.setPosition(position)
-    self._leadscrewModuleRight.setPosition(position)
 
   def _getPosition(self) -> float:
     return self._leadscrewModuleLeft.getPosition()
@@ -90,12 +88,10 @@ class LauncherArmSubsystem(Subsystem):
   def resetToZeroCommand(self) -> Command:
     return self.startEnd(
       lambda: [
-        self._leadscrewModuleLeft.startZeroReset(),
-        self._leadscrewModuleRight.startZeroReset()
+        self._leadscrewModuleLeft.startZeroReset()
       ],
       lambda: [
         self._leadscrewModuleLeft.endZeroReset(),
-        self._leadscrewModuleRight.endZeroReset(),
         setattr(self, "_hasInitialZeroReset", True)
       ]
     ).withName("LauncherArmSubsystem:ResetToZero")
@@ -105,7 +101,6 @@ class LauncherArmSubsystem(Subsystem):
 
   def reset(self) -> None:
     self._leadscrewModuleLeft.reset()
-    self._leadscrewModuleRight.reset()
     self.clearTargetAlignment()
 
   def _updateTelemetry(self) -> None:
